@@ -1,0 +1,12 @@
+/.idea/workspace.xml
+/.idea/libraries
+/.idea/dictionaries
+.DS_Store
+/target
+/build
+.gradle
+credentials.json
+.idea
+*.iml
+deploy.gradle
+release.gradle
