@@ -1,3 +1,7 @@
+plugins {
+    id 'net.researchgate.release' version '2.4.0'
+}
+
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
@@ -44,13 +48,6 @@ ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 signing {
     required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
     sign configurations.archives
-}
-
-buildscript {
-    repositories {
-        jcenter()
-        maven { url "https://plugins.gradle.org/m2/" }
-    }
 }
 
 javadoc {
@@ -138,5 +135,13 @@ uploadArchives {
             }
         }
     }
-  }
 }
+
+release {
+    preTagCommitMessage = "Pre-tag commit: "
+    tagCommitMessage = "Creating tag: "
+    newVersionCommitMessage = "New version commit: "
+    tagTemplate = "v${version}"
+}
+
+afterReleaseBuild.dependsOn uploadArchives
