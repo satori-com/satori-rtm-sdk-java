@@ -1,6 +1,6 @@
 apply plugin: 'java'
-apply plugin: 'maven-publish'
-apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 group = 'com.satori'
 
@@ -26,41 +26,30 @@ jar {
 }
 
 task sourceJar(type: Jar) {
+    classifier 'sources'
     from sourceSets.main.allJava
-    classifier "sources"
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
+task javadocJar(type: Jar) {
     classifier 'javadoc'
-    from javadoc.destinationDir
+    from javadoc
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifactId 'satori-sdk-java'
-            from components.java
-            artifact sourceJar
-            artifact javadocJar
-        }
-    }
-    repositories {
-        maven {
-            url "$buildDir/repo"
-        }
-    }
+artifacts {
+    archives javadocJar, sourceJar
+}
+
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
+signing {
+    required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
 }
 
 buildscript {
     repositories {
         jcenter()
         maven { url "https://plugins.gradle.org/m2/" }
-    }
-    dependencies {
-        classpath "com.github.jengelman.gradle.plugins:shadow:1.2.3"
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.4.0"
-        classpath "net.researchgate:gradle-release:2.4.0"
-        classpath "co.riiid:gradle-github-plugin:0.4.2"
     }
 }
 
@@ -103,6 +92,51 @@ dependencies {
     testCompile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.7.0'
 }
 
-if (file('./release.gradle').exists()) {
-    apply from: "release.gradle"
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.project {
+                name 'Satori SDK for Java'
+                description 'The official Satori SDK for Java'
+                url 'https://github.com/satori-com/satori-sdk-java'
+
+                packaging 'jar'
+
+                scm {
+                    url 'https://github.com/satori-com/satori-sdk-java'
+                    connection 'scm:git:git://github.com/satori-com/satori-sdk-java.git'
+                    developerConnection 'scm:git:git@github.com:satori-com/satori-sdk-java.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The BSD 3-Clause License (with patent grant)'
+                        url 'https://raw.githubusercontent.com/satori-com/satori-sdk-java/master/LICENSE'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'satorisdk'
+                        organization = 'Satori Worldwide, Inc.'
+                        organizationUrl 'https://www.satori.com'
+                        roles { role 'developer' }
+                    }
+                }
+            }
+        }
+    }
+  }
 }
