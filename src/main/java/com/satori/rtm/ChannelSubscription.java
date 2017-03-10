@@ -106,12 +106,12 @@ class ChannelSubscription extends AbstractSubscription {
   void onSubscriptionError(final Pdu<SubscriptionError> pdu) {
     LOG.warn("Received rtm/subscription/error PDU: {}", pdu);
     SubscriptionError subscriptionError = pdu.getBody();
+    getUserListener().onSubscriptionError(subscriptionError);
     if (mSubscriptionConfig.onError(subscriptionError)) {
       getState().transition(this, FAILED);
     } else {
       getState().transition(this, UNSUBSCRIBED);
     }
-    getUserListener().onSubscriptionError(subscriptionError);
   }
 
   protected void onSubscriptionData(final Pdu<SubscriptionData> pdu) {
@@ -145,17 +145,16 @@ class ChannelSubscription extends AbstractSubscription {
         if (SUBSCRIBING == getState()) {
           Pdu<SubscriptionError> pdu = extractSubscriptionErrorPdu(t);
           SubscriptionError subscriptionError = (null != pdu) ? pdu.getBody() : null;
-          if (mSubscriptionConfig.onError(subscriptionError)) {
-            getState().transition(ChannelSubscription.this, FAILED);
-          } else {
-            getState().transition(ChannelSubscription.this, UNSUBSCRIBED);
-          }
-
           if (null != pdu) {
             LOG.warn("Received negative response while handling rtm/subscribe request: {}", pdu);
             getUserListener().onSubscriptionError(subscriptionError);
           } else {
             LOG.warn("Exception while handling rtm/subscribe request", t);
+          }
+          if (mSubscriptionConfig.onError(subscriptionError)) {
+            getState().transition(ChannelSubscription.this, FAILED);
+          } else {
+            getState().transition(ChannelSubscription.this, UNSUBSCRIBED);
           }
         }
       }
@@ -187,15 +186,15 @@ class ChannelSubscription extends AbstractSubscription {
 
         if (UNSUBSCRIBING == getState()) {
           Pdu<SubscriptionError> pdu = extractSubscriptionErrorPdu(t);
-          // rtm/unsubscribe/error indicates some internal error
-          // try to close/open connection to restart the client
-          getRtmService().getConnection().close();
           if (null != pdu) {
             LOG.warn("Received negative response while handling rtm/unsubscribe request: {}", pdu);
             getUserListener().onSubscriptionError(pdu.getBody());
           } else {
             LOG.warn("Exception while handling rtm/unsubscribe request", t);
           }
+          // rtm/unsubscribe/error indicates some internal error
+          // try to close/open connection to restart the client
+          getRtmService().getConnection().close();
         }
       }
     });

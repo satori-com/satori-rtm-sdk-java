@@ -193,7 +193,7 @@ public class ChannelTest extends AbstractRealTest {
 
     client.publish(channel, "trigger_channel_info", Ack.NO);
 
-    assertThat(getEvent(), equalTo("on-subscription-info"));
+    assertThat(getEvent(), equalTo("fast_forward"));
 
     client.stop();
   }

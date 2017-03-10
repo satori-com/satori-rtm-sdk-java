@@ -55,6 +55,29 @@ public class FilterTest extends AbstractRealTest {
     client.stop();
   }
 
+  @Test
+  public void incorrectFilter() throws InterruptedException {
+    RtmClient client = clientBuilder()
+        .build();
+
+    SubscriptionConfig config =
+        new SubscriptionConfig(SubscriptionMode.RELIABLE,
+            logSubscriptionListener(
+                SubscriptionListenerType.FAILED,
+                SubscriptionListenerType.SUBSCRIPTION_ERROR
+            )
+        );
+    config.setFilter("wrong_filter");
+    client.createSubscription(channel, config);
+
+    client.start();
+
+    assertThat(getEvent(), equalTo("invalid_filter"));
+    assertThat(getEvent(), equalTo("on-enter-failed"));
+
+    client.stop();
+  }
+
 
   @Test(expected = IllegalStateException.class)
   public void channelAndFilterSubscription() throws InterruptedException {

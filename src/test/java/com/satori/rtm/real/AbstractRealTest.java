@@ -216,14 +216,14 @@ public abstract class AbstractRealTest {
       @Override
       public void onSubscriptionError(SubscriptionError error) {
         if (detectModes.contains(SubscriptionListenerType.SUBSCRIPTION_ERROR)) {
-          dispatcher.add("on-subscription-error");
+          dispatcher.add(error.getError());
         }
       }
 
       @Override
       public void onSubscriptionInfo(SubscriptionInfo info) {
         if (detectModes.contains(SubscriptionListenerType.SUBSCRIPTION_INFO)) {
-          dispatcher.add("on-subscription-info");
+          dispatcher.add(info.getInfo());
         }
       }
     };
