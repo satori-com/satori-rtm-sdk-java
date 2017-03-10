@@ -7,6 +7,7 @@ import com.neovisionaries.ws.client.WebSocketFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
+import java.net.SocketException;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,7 @@ public class WebSocketTransport implements Transport {
 
   private final static Integer DEFAULT_PING_INTERVAL = 60000;
   private final static Integer MIN_PING_INTERVAL = 1000;
+  private final static Integer SO_TIMEOUT_MS = 60 * 5 * 1000;
 
   private final WebSocket mWebSocket;
   protected TransportListener mTransportListener;
@@ -47,7 +49,10 @@ public class WebSocketTransport implements Transport {
     try {
       mTransportListener = listener;
       mWebSocket.addListener(convertWebSocketListener(listener));
+      mWebSocket.getSocket().setSoTimeout(SO_TIMEOUT_MS);
       mWebSocket.connect();
+    } catch (SocketException e) {
+      throw new TransportException(e);
     } catch (WebSocketException e) {
       throw new TransportException(e);
     }
