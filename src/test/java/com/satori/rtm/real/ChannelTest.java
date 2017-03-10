@@ -520,7 +520,6 @@ public class ChannelTest extends AbstractRealTest {
   }
 
   @Test
-  @Ignore
   public void receiveGlobalErrorWithDisconnectFromServer() throws InterruptedException {
     RtmClient client = clientBuilder()
         .setTransportFactory(new SandboxWebSocketFactory())
@@ -536,8 +535,7 @@ public class ChannelTest extends AbstractRealTest {
 
     client.publish("channel", "system_wide_error_with_server_disconnect", Ack.YES);
 
-    assertThat(getEvent(), equalTo(
-        "on-error-Message: {\"error\":\"system_wide_error\",\"error_text\":\"system_wide_desc\"}"));
+    assertThat(getEvent(), startsWith("on-error-System Wide error received"));
     assertThat(getEvent(), equalTo("on-leave-connected"));
 
     client.stop();
