@@ -2,8 +2,8 @@
 /.idea/libraries
 /.idea/dictionaries
 .DS_Store
-/target
-/build
+target
+build
 .gradle
 credentials.json
 .idea

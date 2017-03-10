@@ -1,4 +1,5 @@
 # Java SDK for Satori platform
+![Maven Central](https://img.shields.io/maven-central/v/com.satori/satori-sdk-java.svg)
 
 Use the Java SDK for the Satori platform to create server-based or mobile Android
  applications that use the RTM to publish and subscribe.
@@ -13,39 +14,32 @@ To install the Java SDK from the private Maven repository, add the following lin
         compile group: 'com.satori', name: 'satori-sdk-java', version:'1.0.0'
     }
 
-## Download from Releases
-
-If you want to download the JAR file manually, you can download it
-[here](https://github.com/satori-com/satori-sdk-java/releases).
-
-Add the location of the JAR file to your `CLASSPATH` or add it to `build.gradle`:
-
-    dependencies {
-        compile fileTree(dir: 'libs', include: ['*.jar'])
-    }
-
 # Documentation
 
 You can view the latest Java SDK documentation [here](https://www.satori.com/docs).
 
-## Logging
+# Logging
 
-The Java SDK uses slf4j library for logging. We have not provided any back-end implementation.
+The Java SDK uses slf4j library as an abstraction for various logging frameworks. We have not provided any back-end implementation.
 Choose an implementation that applies to your project.
 
-For more information, see the slf4j documentation.
+For more information, see the [slf4j](https://www.slf4j.org/) documentation.
 
-## Serialization
+# JSON Library
 
-By default, Java SDK uses the `google-gson` library for JSON serialization. You can specify your own serialization
-module in `ClientBuilder` to use a different JSON library.
+Satori Java SDK could work with different JSON libraries. By default, Java SDK uses the [google-gson](https://github.com/google/gson) library for JSON serialization.
 
-### Using FasterXML Jackson JSON Library Example
+You can specify your own serialization module in `ClientBuilder` to use a different JSON library.
 
-Use [JacksonTest.java](./src/test/java/com/satori/rtm/real/JacksonTest.java) for an example
-using the Jackson JSON library.
+Satori Java SDK has adapter to use [Jackson2](http://wiki.fasterxml.com/JacksonHome) library. To use it use assembly with Jackson2 support.
 
-## Running Tests
+```
+dependencies {
+    compile group: 'com.satori', name: 'satori-sdk-java-jackson2', version:'1.0.0'
+}
+```
+
+# Running Tests
 
 Tests require an active RTM to be available. The tests require `credentials.json` to be
 populated with the RTM properties.

@@ -4,132 +4,103 @@ plugins {
 
 apply plugin: 'java'
 apply plugin: 'maven'
-apply plugin: 'signing'
 
-group = 'com.satori'
+def rtm_config_prop = System.getProperty('RTM_CONFIG')
 
-description = """Satori SDK for Java"""
-
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
-
-repositories {
-    mavenCentral()
+String rtm_config_path = null
+if (rtm_config_prop) {
+    rtm_config_path = file(rtm_config_prop).getCanonicalPath()
 }
 
-allprojects {
-    gradle.projectsEvaluated {
-        tasks.withType(JavaCompile) {
-            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'signing'
+
+    group = 'com.satori'
+
+    task sourceJar(type: Jar) {
+        classifier 'sources'
+        from sourceSets.main.allJava
+    }
+
+    task javadocJar(type: Jar) {
+        classifier 'javadoc'
+        from javadoc
+    }
+
+    artifacts {
+        archives javadocJar, sourceJar
+    }
+
+    ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
+    signing {
+        required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
+        sign configurations.archives
+    }
+
+    javadoc {
+        options.memberLevel = JavadocMemberLevel.PUBLIC
+        options.JFlags = ["-Xmx512m", '-XX:MaxPermSize=256m']
+    }
+
+    test {
+        testLogging.showStandardStreams = true
+        testLogging.exceptionFormat = 'full'
+
+        minHeapSize = "128m"
+        maxHeapSize = "512m"
+        maxParallelForks = 1
+
+        jvmArgs '-XX:MaxPermSize=256m'
+
+        beforeTest { descriptor ->
+            logger.lifecycle("Running test: " + descriptor)
         }
-    }
-}
 
-jar {
-    exclude '**/examples/**'
-}
-
-task sourceJar(type: Jar) {
-    classifier 'sources'
-    from sourceSets.main.allJava
-}
-
-task javadocJar(type: Jar) {
-    classifier 'javadoc'
-    from javadoc
-}
-
-artifacts {
-    archives javadocJar, sourceJar
-}
-
-ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
-
-signing {
-    required { isReleaseVersion && gradle.taskGraph.hasTask("uploadArchives") }
-    sign configurations.archives
-}
-
-javadoc {
-    exclude '**/examples/**'
-    options.memberLevel = JavadocMemberLevel.PUBLIC
-    options.JFlags = ["-Xmx512m", '-XX:MaxPermSize=256m']
-}
-
-test {
-    testLogging.showStandardStreams = true
-
-    minHeapSize = "128m"
-    maxHeapSize = "512m"
-    maxParallelForks = 1
-
-    jvmArgs '-XX:MaxPermSize=256m'
-
-    beforeTest { descriptor ->
-        logger.lifecycle("Running test: " + descriptor)
+        systemProperties = [ RTM_CONFIG: rtm_config_path ]
     }
 
-    systemProperties = [
-            RTM_CONFIG: System.getProperty('RTM_CONFIG')
-    ]
-}
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-dependencies {
-    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.0'
-    compile group: 'com.neovisionaries', name: 'nv-websocket-client', version: '1.31'
-    compile group: 'com.google.guava', name: 'guava', version: '18.0'
-    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.13'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.3'
-    testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
-    testCompile group: 'org.mockito', name: 'mockito-core', version: '1.10.19'
-    testCompile group: 'io.dropwizard.metrics', name: 'metrics-core', version: '3.1.0'
-    testCompile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.7.0'
-    testCompile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.7.0'
-    testCompile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.7.0'
-}
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                }
 
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                }
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: sonatypeUsername, password: sonatypePassword)
-            }
-
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: sonatypeUsername, password: sonatypePassword)
-            }
-
-            pom.project {
-                name 'Satori SDK for Java'
-                description 'The official Satori SDK for Java'
-                url 'https://github.com/satori-com/satori-sdk-java'
-
-                packaging 'jar'
-
-                scm {
+                pom.project {
                     url 'https://github.com/satori-com/satori-sdk-java'
-                    connection 'scm:git:git://github.com/satori-com/satori-sdk-java.git'
-                    developerConnection 'scm:git:git@github.com:satori-com/satori-sdk-java.git'
-                }
 
-                licenses {
-                    license {
-                        name 'The BSD 3-Clause License (with patent grant)'
-                        url 'https://raw.githubusercontent.com/satori-com/satori-sdk-java/master/LICENSE'
-                        distribution 'repo'
+                    packaging 'jar'
+
+                    scm {
+                        url 'https://github.com/satori-com/satori-sdk-java'
+                        connection 'scm:git:git://github.com/satori-com/satori-sdk-java.git'
+                        developerConnection 'scm:git:git@github.com:satori-com/satori-sdk-java.git'
                     }
-                }
 
-                developers {
-                    developer {
-                        id 'satorisdk'
-                        organization = 'Satori Worldwide, Inc.'
-                        organizationUrl 'https://www.satori.com'
-                        roles { role 'developer' }
+                    licenses {
+                        license {
+                            name 'The BSD 3-Clause License (with patent grant)'
+                            url 'https://raw.githubusercontent.com/satori-com/satori-sdk-java/master/LICENSE'
+                            distribution 'repo'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id 'satorisdk'
+                            organization = 'Satori Worldwide, Inc.'
+                            organizationUrl 'https://www.satori.com'
+                            roles { role 'developer' }
+                        }
                     }
                 }
             }

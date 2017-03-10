@@ -1,0 +1,38 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+description = "Satori SDK for Java with defaults."
+
+sourceCompatibility = 1.6
+
+repositories {
+    mavenCentral()
+}
+
+def deps = [ ':satori-sdk-java-gson' ]
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.project {
+                name project.description
+            }
+        }
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            exclude '**/examples/**'
+        }
+    }
+}
+
+javadoc {
+    source deps.collect { project(it).sourceSets.main.allJava }
+}
+
+dependencies {
+    compile deps.collect { project(it) }
+}
