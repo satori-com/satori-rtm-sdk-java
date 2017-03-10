@@ -141,7 +141,7 @@ release {
     preTagCommitMessage = "Pre-tag commit: "
     tagCommitMessage = "Creating tag: "
     newVersionCommitMessage = "New version commit: "
-    tagTemplate = "v${version}"
+    tagTemplate = 'v${version}'
 }
 
 afterReleaseBuild.dependsOn uploadArchives
