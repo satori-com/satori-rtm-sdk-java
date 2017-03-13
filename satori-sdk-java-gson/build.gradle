@@ -22,6 +22,7 @@ uploadArchives {
         mavenDeployer {
             pom.project {
                 name project.description
+                description project.description
             }
         }
     }
