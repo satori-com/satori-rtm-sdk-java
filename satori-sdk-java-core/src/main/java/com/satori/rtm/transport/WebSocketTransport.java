@@ -68,6 +68,10 @@ public class WebSocketTransport implements Transport {
     mWebSocket.disconnect();
   }
 
+  public WebSocket getNVWebSocket() {
+    return mWebSocket;
+  }
+
   private WebSocketAdapter convertWebSocketListener(final TransportListener listener) {
     return new WebSocketAdapter() {
       @Override

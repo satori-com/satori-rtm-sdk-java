@@ -282,6 +282,6 @@ class ChannelSubscription extends AbstractSubscription {
 
   @Override
   public String getName() {
-    return "Channel[" + getSubscriptionId() + "]";
+    return "Subscription[" + getSubscriptionId() + "]";
   }
 }

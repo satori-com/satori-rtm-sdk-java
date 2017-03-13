@@ -24,8 +24,12 @@ public class WebSocketTransportFactory implements TransportFactory {
   }
 
   @Override
-  public Transport create(URI uri) throws IOException {
+  public WebSocketTransport create(URI uri) throws IOException {
     WebSocket webSocket = mWebSocketFactory.createSocket(uri);
     return new WebSocketTransport(webSocket, mIsControlCongestion);
+  }
+
+  public WebSocketFactory getNVWebSocketFactory() {
+    return mWebSocketFactory;
   }
 }
