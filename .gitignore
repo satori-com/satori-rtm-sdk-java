@@ -10,3 +10,8 @@ credentials.json
 *.iml
 deploy.gradle
 release.gradle
+
+.project
+.settings
+.classpath
+bin
