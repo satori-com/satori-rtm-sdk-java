@@ -45,7 +45,7 @@ subprojects {
         options.JFlags = ["-Xmx512m", '-XX:MaxPermSize=256m']
     }
 
-    test {
+    tasks.withType(Test) {
         testLogging.showStandardStreams = true
         testLogging.exceptionFormat = 'full'
 
