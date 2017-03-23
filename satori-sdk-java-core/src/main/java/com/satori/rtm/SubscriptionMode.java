@@ -15,7 +15,7 @@ public enum SubscriptionMode {
    * subscription to the earliest possible position if the stream position is expired
    * on reconnect or a client has slow connection.
    */
-  public static EnumSet<SubscriptionMode> SIMPLE =
+  public static EnumSet<SubscriptionMode> RELIABLE =
       EnumSet.of(TRACK_POSITION, FAST_FORWARD, AUTO_RECONNECT);
 
   /**
@@ -25,7 +25,7 @@ public enum SubscriptionMode {
    * actual position. RTM forwards the subscription to the earliest possible
    * position if a client has slow connection.
    */
-  public static EnumSet<SubscriptionMode> RELIABLE =
+  public static EnumSet<SubscriptionMode> SIMPLE =
       EnumSet.of(FAST_FORWARD, AUTO_RECONNECT);
 
   /**
