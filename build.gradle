@@ -115,4 +115,4 @@ release {
     tagTemplate = 'v${version}'
 }
 
-afterReleaseBuild.dependsOn uploadArchives
+afterReleaseBuild.dependsOn subprojects.collect { it.tasks.findAll { it.name == 'uploadArchives' } }
