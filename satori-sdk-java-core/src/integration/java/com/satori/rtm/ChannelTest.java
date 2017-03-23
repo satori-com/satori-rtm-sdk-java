@@ -282,7 +282,7 @@ public class ChannelTest extends AbstractRealTest {
 
     clientSubscriber.start();
     clientSubscriber
-        .createSubscription(channel, SubscriptionMode.SIMPLE, logSubscriptionListener(
+        .createSubscription(channel, SubscriptionMode.RELIABLE, logSubscriptionListener(
             SubscriptionListenerType.SUBSCRIBED,
             SubscriptionListenerType.SUBSCRIPTION_DATA
         ));

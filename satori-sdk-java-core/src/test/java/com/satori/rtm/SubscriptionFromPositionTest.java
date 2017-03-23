@@ -43,7 +43,7 @@ public class SubscriptionFromPositionTest {
     mConnection = mock(Connection.class);
     mListener = mock(SubscriptionListener.class);
 
-    SubscriptionConfig config = new SubscriptionConfig(SubscriptionMode.SIMPLE, mListener)
+    SubscriptionConfig config = new SubscriptionConfig(SubscriptionMode.RELIABLE, mListener)
         .setPosition("position");
     mFSM = new ChannelSubscription("channel", config, mService);
   }
@@ -222,7 +222,7 @@ public class SubscriptionFromPositionTest {
 
     SubscriptionAdapter newUserListener = mock(SubscriptionAdapter.class);
     mFSM.updateSubscriptionConfig(
-        new SubscriptionConfig(SubscriptionMode.SIMPLE, newUserListener)
+        new SubscriptionConfig(SubscriptionMode.RELIABLE, newUserListener)
             .setPosition("position"));
     assertThat(mFSM.getMode(), is(ChannelSubscription.Mode.CYCLE));
     verify(newUserListener).onCreated();
