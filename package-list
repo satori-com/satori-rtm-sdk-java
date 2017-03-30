@@ -1,0 +1,6 @@
+com.satori.rtm
+com.satori.rtm.auth
+com.satori.rtm.connection
+com.satori.rtm.model
+com.satori.rtm.transport
+com.satori.rtm.utils
