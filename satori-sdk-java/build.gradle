@@ -31,7 +31,7 @@ sourceSets {
 }
 
 javadoc {
-    source deps.collect { project(it).sourceSets.main.allJava }
+    source { deps.collect { project(it).sourceSets.main.allJava } }
 }
 
 dependencies {
