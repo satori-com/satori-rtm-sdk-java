@@ -43,6 +43,7 @@ subprojects {
     javadoc {
         options.memberLevel = JavadocMemberLevel.PUBLIC
         options.JFlags = ["-Xmx512m", '-XX:MaxPermSize=256m']
+        options.header = docsHeader
     }
 
     test {
@@ -115,4 +116,4 @@ release {
     tagTemplate = 'v${version}'
 }
 
-afterReleaseBuild.dependsOn uploadArchives
+afterReleaseBuild.dependsOn subprojects.collect { it.tasks.findAll { it.name == 'uploadArchives' } }
