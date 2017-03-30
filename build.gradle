@@ -43,6 +43,7 @@ subprojects {
     javadoc {
         options.memberLevel = JavadocMemberLevel.PUBLIC
         options.JFlags = ["-Xmx512m", '-XX:MaxPermSize=256m']
+        options.header = docsHeader
     }
 
     tasks.withType(Test) {
