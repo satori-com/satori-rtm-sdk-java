@@ -13,32 +13,31 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class ComplexPublishSubscribe {
+public class CustomObjectSubscription {
   static String endpoint = "<ENDPOINT>";
   static String appkey = "<APPKEY>";
 
   public static void main(String[] args) throws InterruptedException {
-
-    final CountDownLatch signal = new CountDownLatch(1);
     final RtmClient client = new RtmClientBuilder(endpoint, appkey)
         .build();
+    final CountDownLatch signal = new CountDownLatch(1);
 
     client.start();
-    final String channel = "channel";
-    client.createSubscription(channel, SubscriptionMode.SIMPLE,
+
+    client.createSubscription("mychannel", SubscriptionMode.SIMPLE,
         new SubscriptionAdapter() {
           @Override
           public void onEnterSubscribed(SubscribeRequest request, SubscribeReply reply) {
             Person mike = new Person("Mike", 8, null);
             Person alice = new Person("Alice", 3, null);
             Person john = new Person("John", 32, Lists.newArrayList(mike, alice));
-            client.publish(channel, john, Ack.NO);
+            client.publish("mychannel", john, Ack.NO);
           }
 
           @Override
           public void onSubscriptionData(SubscriptionData data) {
             for (Person person : data.getMessagesAsType(Person.class)) {
-              System.out.println("received: " + person);
+              System.out.println("Got person: " + person);
             }
             signal.countDown();
           }
@@ -52,6 +51,8 @@ public class ComplexPublishSubscribe {
     String name;
     Integer age;
     List<Person> children;
+
+    public Person() { }
 
     public Person(String name, Integer age, List<Person> children) {
       this.name = name;
