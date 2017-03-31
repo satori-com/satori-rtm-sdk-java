@@ -47,7 +47,9 @@ public class FilterSubscription {
 
       @Override
       public void onSubscriptionData(SubscriptionData data) {
-        System.out.println("Got message: " + data);
+        for (Map map: data.getMessagesAsType(Map.class)) {
+          System.out.println("{a=" + map.get("a") + ", MAX(b)=" + map.get("MAX(b)") + "}");
+        }
         signal.countDown();
       }
     };

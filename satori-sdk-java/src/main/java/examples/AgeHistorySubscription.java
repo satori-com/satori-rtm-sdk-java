@@ -41,7 +41,9 @@ public class AgeHistorySubscription {
 
       @Override
       public void onSubscriptionData(SubscriptionData data) {
-        System.out.println("Got message: " + data);
+        for (String msg: data.getMessagesAsStrings()) {
+          System.out.println("Got message: " + msg);
+        }
         signal.countDown();
       }
     };
