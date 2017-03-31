@@ -48,7 +48,7 @@ The `credentials.json` file must include the following key-value pairs:
 
 ```
 {
-  "endpoint": "ws://<SATORI_HOST>/",
+  "endpoint": "wss://<SATORI_HOST>/",
   "appkey": "<APP KEY>",
   "superuser_role_secret": "<ROLE SECRET KEY>"
 }
