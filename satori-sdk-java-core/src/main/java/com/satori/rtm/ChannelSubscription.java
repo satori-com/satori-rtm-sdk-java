@@ -60,9 +60,6 @@ class ChannelSubscription extends AbstractSubscription {
   @Override
   public void onDisconnected() {
     super.onDisconnected();
-    if (!mSubscriptionConfig.isAutoReconnect()) {
-      dispose();
-    }
   }
 
   @Override

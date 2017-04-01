@@ -189,8 +189,4 @@ public class SubscriptionConfig {
     request.setPeriod(mSubscribeRequest.getPeriod());
     return request;
   }
-
-  boolean isAutoReconnect() {
-    return mSubscriptionModes.contains(SubscriptionMode.AUTO_RECONNECT);
-  }
 }
