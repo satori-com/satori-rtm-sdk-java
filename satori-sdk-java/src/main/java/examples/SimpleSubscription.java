@@ -16,7 +16,6 @@ public class SimpleSubscription {
   static String endpoint = "<ENDPOINT>";
   static String appkey = "<APPKEY>";
 
-
   public static void main(String[] args) throws InterruptedException {
     final RtmClient client = new RtmClientBuilder(endpoint, appkey)
         .build();

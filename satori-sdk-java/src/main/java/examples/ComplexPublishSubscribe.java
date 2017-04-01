@@ -18,7 +18,6 @@ public class ComplexPublishSubscribe {
   static String appkey = "<APPKEY>";
 
   public static void main(String[] args) throws InterruptedException {
-
     final CountDownLatch signal = new CountDownLatch(1);
     final RtmClient client = new RtmClientBuilder(endpoint, appkey)
         .build();
@@ -52,6 +51,8 @@ public class ComplexPublishSubscribe {
     String name;
     Integer age;
     List<Person> children;
+
+    public Person() { }
 
     public Person(String name, Integer age, List<Person> children) {
       this.name = name;
