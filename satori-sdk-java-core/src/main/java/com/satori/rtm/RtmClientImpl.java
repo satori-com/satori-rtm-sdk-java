@@ -21,6 +21,7 @@ import com.satori.rtm.model.SystemWideException;
 import com.satori.rtm.model.WriteReply;
 import com.satori.rtm.model.WriteRequest;
 import com.satori.rtm.transport.TransportFactory;
+import com.satori.rtm.utils.FutureUtils;
 import com.satori.rtm.utils.TrampolineExecutorService;
 import com.satori.rtm.utils.TryCatchProxy;
 import org.slf4j.Logger;
@@ -267,8 +268,9 @@ class RtmClientImpl implements RtmClient {
         return;
       }
 
-      ListenableFuture<Void> authenticationResult = mAuthProvider.authenticate(mConnection);
-      Futures.addCallback(authenticationResult, new FutureCallback<Void>() {
+      ListenableFuture<Void> authResult = mAuthProvider.authenticate(mConnection);
+      FutureUtils.addExceptionLogging(authResult, "Authentication is failed", LOG);
+      Futures.addCallback(authResult, new FutureCallback<Void>() {
         @Override
         public void onSuccess(Void result) {
           mClientFSM.onConnected();
@@ -276,7 +278,6 @@ class RtmClientImpl implements RtmClient {
 
         @Override
         public void onFailure(Throwable t) {
-          LOG.warn("Authentication error", t);
           mUserListener.onError(mClient, new AuthException(t));
           mClientFSM.onConnectingFailed();
         }
