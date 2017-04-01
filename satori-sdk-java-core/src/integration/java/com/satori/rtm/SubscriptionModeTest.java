@@ -84,7 +84,7 @@ public class SubscriptionModeTest extends AbstractRealTest {
     client.start();
     final AtomicReference<SubscribeReply> ref = new AtomicReference<SubscribeReply>(null);
     SubscriptionConfig cfg = new SubscriptionConfig(
-        EnumSet.of(SubscriptionMode.TRACK_POSITION, SubscriptionMode.AUTO_RECONNECT),
+        EnumSet.of(SubscriptionMode.TRACK_POSITION),
         new SubscriptionAdapter() {
           @Override
           public void onEnterSubscribed(SubscribeRequest request, SubscribeReply reply) {
@@ -107,7 +107,7 @@ public class SubscriptionModeTest extends AbstractRealTest {
         .build();
     client.start();
     SubscriptionConfig cfg = new SubscriptionConfig(
-        EnumSet.of(SubscriptionMode.AUTO_RECONNECT),
+        EnumSet.noneOf(SubscriptionMode.class),
         new SubscriptionAdapter() {
           @Override
           public void onEnterSubscribed(SubscribeRequest request, SubscribeReply reply) {
@@ -124,33 +124,12 @@ public class SubscriptionModeTest extends AbstractRealTest {
   }
 
   @Test
-  public void checkReconnectWithoutReconnectFlag() throws InterruptedException {
-    final RtmClient client = clientBuilder()
-        .build();
-    client.start();
-    SubscriptionConfig cfg = new SubscriptionConfig(
-        EnumSet.noneOf(SubscriptionMode.class),
-        logSubscriptionListener(
-            SubscriptionListenerType.CREATED,
-            SubscriptionListenerType.DELETED,
-            SubscriptionListenerType.SUBSCRIBED
-        )
-    );
-    client.createSubscription(channel, cfg);
-    assertThat(getEvent(), equalTo("on-created"));
-    assertThat(getEvent(), equalTo("on-enter-subscribed"));
-    client.stop();
-    assertThat(getEvent(), equalTo("on-leave-subscribed"));
-    assertThat(getEvent(), equalTo("on-deleted"));
-  }
-
-  @Test
   public void checkReconnectWithReconnectFlag() throws InterruptedException {
     final RtmClient client = clientBuilder()
         .build();
     client.start();
     SubscriptionConfig cfg = new SubscriptionConfig(
-        EnumSet.of(SubscriptionMode.AUTO_RECONNECT),
+        EnumSet.noneOf(SubscriptionMode.class),
         logSubscriptionListener(
             SubscriptionListenerType.CREATED,
             SubscriptionListenerType.DELETED,

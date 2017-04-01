@@ -5,6 +5,10 @@ import java.util.EnumSet;
 public enum SubscriptionMode {
   TRACK_POSITION,
   FAST_FORWARD,
+  /**
+   * @deprecated As of release 1.0.2, not used anymore.
+   */
+  @Deprecated
   AUTO_RECONNECT;
 
   /**
@@ -16,7 +20,7 @@ public enum SubscriptionMode {
    * on reconnect or a client has slow connection.
    */
   public static final EnumSet<SubscriptionMode> RELIABLE =
-      EnumSet.of(TRACK_POSITION, FAST_FORWARD, AUTO_RECONNECT);
+      EnumSet.of(TRACK_POSITION, FAST_FORWARD);
 
   /**
    * May lose data during reconnect and on slow connections.
@@ -26,7 +30,7 @@ public enum SubscriptionMode {
    * position if a client has slow connection.
    */
   public static final EnumSet<SubscriptionMode> SIMPLE =
-      EnumSet.of(FAST_FORWARD, AUTO_RECONNECT);
+      EnumSet.of(FAST_FORWARD);
 
   /**
    * Tries to avoid any data loss, could get out_of_sync and expired_position errors
@@ -38,5 +42,5 @@ public enum SubscriptionMode {
    * slow then out_of_sync error is thrown.
    */
   public static final EnumSet<SubscriptionMode> ADVANCED =
-      EnumSet.of(TRACK_POSITION, AUTO_RECONNECT);
+      EnumSet.of(TRACK_POSITION);
 }
