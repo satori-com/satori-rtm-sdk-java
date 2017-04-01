@@ -35,3 +35,5 @@ dependencies {
     testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
     testCompile project(path: ':satori-sdk-java-core', configuration: 'integration')
 }
+
+check.dependsOn integration
