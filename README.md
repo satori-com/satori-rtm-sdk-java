@@ -30,7 +30,11 @@ dependencies {
 
 # Documentation
 
-You can view the latest Java SDK documentation [here](https://www.satori.com/docs/client-libraries/java).
+The various documentation is available:
+
+* The [Java SDK page on Satori Website](https://www.satori.com/docs/client-libraries/java).
+* The [JavaDoc](https://satori-com.github.io/satori-sdk-java/).
+* The [RTM API](https://www.satori.com/docs/references/rtm-api) specification.
 
 # Logging
 
