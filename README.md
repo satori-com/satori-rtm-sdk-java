@@ -8,15 +8,29 @@ Use the Java SDK for the Satori platform to create server-based or mobile Androi
 
 ## Maven
 
-To install the Java SDK from the private Maven repository, add the following lines to `build.gradle`:
+To install the Java SDK from the Central Maven repository using Maven, add the following lines to `pom.xml`:
 
-    dependencies {
-        compile group: 'com.satori', name: 'satori-sdk-java', version:'1.0.2'
-    }
+```
+<dependency>
+    <groupId>com.satori</groupId>
+    <artifactId>satori-sdk-java</artifactId>
+    <version>1.0.2</version>
+</dependency>
+```
+
+## Gradle
+
+To install the Java SDK from the Central Maven repository using Gradle, add the following lines to `build.gradle`:
+
+```
+dependencies {
+    compile group: 'com.satori', name: 'satori-sdk-java', version:'1.0.2'
+}
+```
 
 # Documentation
 
-You can view the latest Java SDK documentation [here](https://www.satori.com/docs).
+You can view the latest Java SDK documentation [here](https://www.satori.com/docs/client-libraries/java).
 
 # Logging
 
