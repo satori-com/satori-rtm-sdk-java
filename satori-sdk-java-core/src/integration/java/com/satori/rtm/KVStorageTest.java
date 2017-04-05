@@ -12,6 +12,7 @@ import com.satori.rtm.model.Pdu;
 import com.satori.rtm.model.ReadReply;
 import com.satori.rtm.model.SearchReply;
 import com.satori.rtm.model.WriteReply;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -65,6 +66,7 @@ public class KVStorageTest extends AbstractRealTest {
   }
 
   @Test
+  @Ignore
   public void search() throws ExecutionException, InterruptedException {
     RtmClient client = clientBuilder().build();
     client.start();
