@@ -115,7 +115,7 @@ class RtmClientImpl implements RtmClient {
   public void shutdown() {
     stop();
     // shutdown scheduler if it wasn't passed from the builder
-    if (!mIsExtDispatcher) {
+    if (!mIsExtScheduler) {
       mScheduledExecutorService.shutdown();
     }
     if (!mIsExtDispatcher) {
