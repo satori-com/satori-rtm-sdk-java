@@ -339,8 +339,14 @@ public abstract class AbstractRealTest {
     @SerializedName("appkey")
     String appKey;
 
-    @SerializedName("superuser_role_secret")
-    String superuserRoleSecret;
+    @SerializedName("auth_role_name")
+    String roleName;
+
+    @SerializedName("auth_role_secret_key")
+    String roleSecretKey;
+
+    @SerializedName("auth_restricted_channel")
+    String restrictedChannelName;
 
     static Config loadFromPath(String path) throws IOException {
       Reader reader = null;
@@ -357,9 +363,18 @@ public abstract class AbstractRealTest {
           throw new IllegalArgumentException("'appkey' is not specified: " + path);
         }
 
-        if (Strings.isNullOrEmpty(config.superuserRoleSecret)) {
-          throw new IllegalArgumentException("'superuser_role_secret' is not specified: " + path);
+        if (Strings.isNullOrEmpty(config.roleName)) {
+          throw new IllegalArgumentException("'auth_role_name' is not specified: " + path);
         }
+
+        if (Strings.isNullOrEmpty(config.roleSecretKey)) {
+          throw new IllegalArgumentException("'auth_role_secret_key' is not specified: " + path);
+        }
+
+        if (Strings.isNullOrEmpty(config.restrictedChannelName)) {
+          throw new IllegalArgumentException("'auth_restricted_channel' is not specified: " + path);
+        }
+
         return config;
       } catch (FileNotFoundException ex) {
         throw new IOException(

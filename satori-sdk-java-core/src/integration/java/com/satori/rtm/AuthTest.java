@@ -18,7 +18,7 @@ public class AuthTest extends AbstractRealTest {
   @Test
   public void successfulAuthentication() throws InterruptedException {
     RtmClient client = clientBuilder()
-        .setAuthProvider(new RoleSecretAuthProvider("superuser", config.superuserRoleSecret))
+        .setAuthProvider(new RoleSecretAuthProvider(config.roleName, config.roleSecretKey))
         .setListener(createAuthConnectionListener())
         .build();
     client.start();
@@ -33,7 +33,7 @@ public class AuthTest extends AbstractRealTest {
   @Test
   public void unsuccessfulAuthentication() throws InterruptedException {
     RtmClient client = clientBuilder()
-        .setAuthProvider(new RoleSecretAuthProvider("superuser", "bad_key"))
+        .setAuthProvider(new RoleSecretAuthProvider(config.roleName, "bad_key"))
         .setListener(createAuthConnectionListener())
         .build();
 
@@ -48,11 +48,11 @@ public class AuthTest extends AbstractRealTest {
   @Test
   public void tryingToSubscribeToChannelWhenAuthorized() throws InterruptedException {
     RtmClient client = clientBuilder()
-        .setAuthProvider(new RoleSecretAuthProvider("superuser", config.superuserRoleSecret))
+        .setAuthProvider(new RoleSecretAuthProvider(config.roleName, config.roleSecretKey))
         .build();
 
     client.start();
-    client.createSubscription(channel, SubscriptionMode.ADVANCED,
+    client.createSubscription(config.restrictedChannelName, SubscriptionMode.SIMPLE,
         logSubscriptionListener(
             SubscriptionListenerType.SUBSCRIBING,
             SubscriptionListenerType.SUBSCRIBED,
