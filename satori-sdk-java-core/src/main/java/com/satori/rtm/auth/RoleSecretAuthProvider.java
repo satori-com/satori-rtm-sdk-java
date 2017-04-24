@@ -61,7 +61,7 @@ public class RoleSecretAuthProvider implements AuthProvider {
   public ListenableFuture<Void> authenticate(final Connection connection) {
     ListenableFuture<Pdu<HandshakeResponse>> handshakeResponse = handshake(connection, this.mRole);
 
-    ListenableFuture<Pdu<AuthenticateResponse>> authenticate = Futures.transform(
+    ListenableFuture<Pdu<AuthenticateResponse>> authenticate = Futures.transformAsync(
         handshakeResponse,
         new AsyncFunction<Pdu<HandshakeResponse>, Pdu<AuthenticateResponse>>() {
           @Override
