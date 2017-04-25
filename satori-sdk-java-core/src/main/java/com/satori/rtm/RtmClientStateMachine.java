@@ -22,7 +22,6 @@ class RtmClientStateMachine extends AbstractStateMachine<RtmClientStateMachine.A
   private final static ConnectingState CONNECTING = new ConnectingState();
   private final static ConnectedState CONNECTED = new ConnectedState();
   private final static AwaitingState AWAITING = new AwaitingState();
-  private final static Integer THRESHOLD_FAIL_COUNT = 30;
   private static Random RANDOM = new Random();
   private final ExecutorService mDispatcher;
   private final ScheduledExecutorService mTimerExecutionService;
@@ -109,7 +108,8 @@ class RtmClientStateMachine extends AbstractStateMachine<RtmClientStateMachine.A
 
   long getNextAwaitInterval() {
     LOG.debug(String.format("Try to reconnect (#%d)", mFailCount));
-    double count = Math.min(mFailCount, THRESHOLD_FAIL_COUNT);
+    int maxPow = 30;
+    double count = Math.min(mFailCount, maxPow);
     long offset = (long) Math
         .min(mMaxReconnectInterval, mJitter + mMinReconnectInterval * Math.pow(2, count));
     this.mFailCount += 1;
