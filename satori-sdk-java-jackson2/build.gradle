@@ -29,12 +29,12 @@ task integration(type: Test, description: 'Runs the integration tests', group: '
 dependencies {
     compile project(':satori-sdk-java-core')
 
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.7.0'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.7.0'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.7.0'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.8.8'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.8.8'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.8'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.3'
+    testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.2'
     testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
     // needed to parse credentials.json
     testCompile group: 'com.google.code.gson', name: 'gson', version: '2.8.0'
