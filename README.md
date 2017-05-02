@@ -1,4 +1,4 @@
-# Java SDK for Satori platform
+# Java SDK for Satori RTM
 ![Maven Central](https://img.shields.io/maven-central/v/com.satori/satori-sdk-java.svg)
 
 Use the Java SDK for the Satori platform to create server-based or mobile Android
