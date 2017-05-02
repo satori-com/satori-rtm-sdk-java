@@ -1,6 +1,6 @@
-rootProject.name = 'satori-sdk-java-all'
+rootProject.name = 'satori-rtm-sdk-all'
 
-include 'satori-sdk-java'
-include 'satori-sdk-java-core'
-include 'satori-sdk-java-gson'
-include 'satori-sdk-java-jackson2'
+include 'satori-rtm-sdk'
+include 'satori-rtm-sdk-core'
+include 'satori-rtm-sdk-gson'
+include 'satori-rtm-sdk-jackson2'

@@ -9,7 +9,7 @@ repositories {
     mavenCentral()
 }
 
-def deps = [ ':satori-sdk-java-core', ':satori-sdk-java-gson' ]
+def deps = [ ':satori-rtm-sdk-core', ':satori-rtm-sdk-gson' ]
 
 uploadArchives {
     repositories {
