@@ -1,3 +1,8 @@
+-------------------
+* Upgrade 3d party deps to the latest versions
+* Rename package satori-sdk-java -> satori-rtm-sdk
+* Remove superuser from credentials.json file
+
 v1.0.2 (2017-04-02)
 -------------------
 * Fix issue in subscription mode flags
