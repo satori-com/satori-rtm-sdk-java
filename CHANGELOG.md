@@ -1,5 +1,5 @@
 -------------------
-* Upgrade 3d party deps to the latest versions
+* Upgrade 3rd party deps to the latest versions
 * Rename package satori-sdk-java -> satori-rtm-sdk
 * Remove superuser from credentials.json file
 
