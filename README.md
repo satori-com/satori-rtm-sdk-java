@@ -14,7 +14,7 @@ To install the Java SDK from the Central Maven repository using Maven, add the f
 <dependency>
     <groupId>com.satori</groupId>
     <artifactId>satori-rtm-sdk</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 </dependency>
 ```
 
@@ -24,7 +24,7 @@ To install the Java SDK from the Central Maven repository using Gradle, add the 
 
 ```
 dependencies {
-    compile group: 'com.satori', name: 'satori-rtm-sdk', version:'1.0.2'
+    compile group: 'com.satori', name: 'satori-rtm-sdk', version:'1.0.3'
 }
 ```
 
@@ -53,7 +53,7 @@ Satori Java SDK has adapter to use [Jackson2](http://wiki.fasterxml.com/JacksonH
 
 ```
 dependencies {
-    compile group: 'com.satori', name: 'satori-rtm-sdk-jackson2', version:'1.0.2'
+    compile group: 'com.satori', name: 'satori-rtm-sdk-jackson2', version:'1.0.3'
 }
 ```
 

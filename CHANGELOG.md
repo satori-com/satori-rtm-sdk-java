@@ -1,3 +1,4 @@
+v1.0.3 (2017-05-09)
 -------------------
 * Upgrade 3rd party deps to the latest versions
 * Rename package satori-sdk-java -> satori-rtm-sdk
