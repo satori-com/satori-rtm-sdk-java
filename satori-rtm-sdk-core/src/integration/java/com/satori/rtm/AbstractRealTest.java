@@ -379,7 +379,7 @@ public abstract class AbstractRealTest {
       } catch (FileNotFoundException ex) {
         throw new IOException(
             "Can't find the credentials.json file for the test environment.\n" +
-            "See: https://github.com/satori-com/satori-sdk-java/tree/master#running-tests",
+            "See: https://github.com/satori-com/satori-rtm-sdk-java/tree/master#running-tests",
             ex);
       } finally {
         if (null != reader) {

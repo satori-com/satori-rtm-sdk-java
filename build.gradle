@@ -77,20 +77,20 @@ subprojects {
                 }
 
                 pom.project {
-                    url 'https://github.com/satori-com/satori-sdk-java'
+                    url 'https://github.com/satori-com/satori-rtm-sdk-java'
 
                     packaging 'jar'
 
                     scm {
-                        url 'https://github.com/satori-com/satori-sdk-java'
-                        connection 'scm:git:git://github.com/satori-com/satori-sdk-java.git'
-                        developerConnection 'scm:git:git@github.com:satori-com/satori-sdk-java.git'
+                        url 'https://github.com/satori-com/satori-rtm-sdk-java'
+                        connection 'scm:git:git://github.com/satori-com/satori-rtm-sdk-java.git'
+                        developerConnection 'scm:git:git@github.com:satori-com/satori-rtm-sdk-java.git'
                     }
 
                     licenses {
                         license {
                             name 'The BSD 3-Clause License (with patent grant)'
-                            url 'https://raw.githubusercontent.com/satori-com/satori-sdk-java/master/LICENSE'
+                            url 'https://raw.githubusercontent.com/satori-com/satori-rtm-sdk-java/master/LICENSE'
                             distribution 'repo'
                         }
                     }

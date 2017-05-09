@@ -1,5 +1,5 @@
 # Java SDK for Satori RTM
-![Maven Central](https://img.shields.io/maven-central/v/com.satori/satori-sdk-java.svg)
+![Maven Central](https://img.shields.io/maven-central/v/com.satori/satori-rtm-sdk.svg)
 
 Use the Java SDK for the Satori RTM to create server-based or mobile Android
  applications that use the RTM to publish and subscribe.
@@ -33,7 +33,7 @@ dependencies {
 The various documentation is available:
 
 * The [Java SDK page on Satori Website](https://www.satori.com/docs/client-libraries/java).
-* The [JavaDoc](https://satori-com.github.io/satori-sdk-java/).
+* The [JavaDoc](https://satori-com.github.io/satori-rtm-sdk-java/).
 * The [RTM API](https://www.satori.com/docs/references/rtm-api) specification.
 
 # Logging
