@@ -57,6 +57,18 @@ dependencies {
 }
 ```
 
+# Using HTTPS proxy
+
+The SDK supports working through an HTTPS proxy.
+
+The following is an example how to set a proxy server:
+
+```Java
+RtmClient client = new RtmClientBuilder("YOUR_ENDPOINT", "YOUR_APPKEY")
+    .setHttpsProxy(URI.create("http://127.0.0.1:3128"))
+    .build();
+```
+
 # Running Tests
 
 Tests require an active RTM to be available. The tests require `credentials.json` to be

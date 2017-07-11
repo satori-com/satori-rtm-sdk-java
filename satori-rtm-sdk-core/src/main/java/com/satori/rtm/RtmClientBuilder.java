@@ -6,8 +6,9 @@ import com.google.common.base.Strings;
 import com.satori.rtm.auth.AuthProvider;
 import com.satori.rtm.connection.ConnectionListener;
 import com.satori.rtm.connection.Serializer;
+import com.satori.rtm.transport.AbstractTransportFactory;
+import com.satori.rtm.transport.Transport;
 import com.satori.rtm.transport.TransportFactory;
-import com.satori.rtm.transport.WebSocketTransport;
 import com.satori.rtm.transport.WebSocketTransportFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,19 +48,19 @@ public class RtmClientBuilder {
   private static final String RTM_VER = "v2";
   private final String mEndpoint;
   private final String mAppKey;
-
-  int mConnectionTimeout = 60000;
   long mMinReconnectInterval = 1000;
   long mMaxReconnectInterval = 120000;
   int mPendingActionQueueLength = DEFAULT_PENDING_QUEUE_LENGTH;
   ScheduledExecutorService mScheduledExecutorService;
   RtmClientListener mUserListener = new RtmClientAdapter() {};
   boolean mIsAutoReconnect = true;
-  TransportFactory mTransportFactory;
+  AbstractTransportFactory mTransportFactory;
   AuthProvider mAuthProvider;
   Serializer mJsonSerializer;
   boolean mShouldDispatchTransport = true;
   ExecutorService mDispatcher;
+  private int mConnectionTimeout = 60000;
+  private URI mProxyUri;
 
   /**
    * Creates a instance of a client builder for specific endpoint and application key.
@@ -141,8 +142,10 @@ public class RtmClientBuilder {
    */
   public RtmClient build() {
     if (null == mTransportFactory) {
-      mTransportFactory = new WebSocketTransportFactory(mConnectionTimeout);
+      mTransportFactory = new WebSocketTransportFactory();
     }
+    mTransportFactory.setConnectionTimeoutMillis(mConnectionTimeout);
+    mTransportFactory.setProxy(mProxyUri);
 
     if (null == mJsonSerializer) {
       mJsonSerializer = createSerializer();
@@ -166,6 +169,33 @@ public class RtmClientBuilder {
    */
   public RtmClientBuilder setConnectionTimeout(int connectionTimeout) {
     this.mConnectionTimeout = connectionTimeout;
+    return this;
+  }
+
+  /**
+   * Set the proxy server by a URI.
+   * <p>
+   * If the URI contains the scheme part and its value is
+   * {@code "https"} (case-insensitive) then TLS is enabled in the communication with
+   * the proxy server.
+   * <p>
+   * If the URI contains the userinfo part then userinfo is used for authentication at the
+   * proxy server.
+   * <p>
+   * Example of the proxy uri with authentication:
+   * <pre>
+   * {@code
+   * RtmClient client = new RtmClientBuilder("YOUR_ENDPOINT", "YOUR_APPKEY")
+   *   .setProxy(URI.create("http://username:password@127.0.0.1:3128"))
+   *   .build();
+   * }
+   * </pre>
+   *
+   * @param proxyUri proxy address URI.
+   * @return {@link RtmClientBuilder} instance.
+   */
+  public RtmClientBuilder setProxy(URI proxyUri) {
+    this.mProxyUri = proxyUri;
     return this;
   }
 
@@ -231,17 +261,35 @@ public class RtmClientBuilder {
   /**
    * Sets factory for a WebSocket transport.
    * <p>
-   * Java does not include a native WebSocket implementation. This method allows you to use a different WebSocket
-   * implementation other than the default Java SDK WebSocket transport.
-   * <p>
-   * By default, the Java SDK uses the {@code nv-websocket-client} WebSocket client implementation.
+   * This method allows you to use a different WebSocket implementation. By default, the Java SDK
+   * uses the {@code nv-websocket-client} WebSocket client implementation.
    *
    * @param transportFactory WebSocket transport factory.
    * @return {@link RtmClientBuilder} instance.
-   * @see WebSocketTransport
+   * @see WebSocketTransportFactory
+   * @deprecated use {@link RtmClientBuilder#setTransportFactory(AbstractTransportFactory)}
+   */
+  @Deprecated
+  public RtmClientBuilder setTransportFactory(final TransportFactory transportFactory) {
+    return setTransportFactory(new AbstractTransportFactory() {
+      @Override
+      public Transport create(URI uri) throws IOException {
+        return transportFactory.create(uri);
+      }
+    });
+  }
+
+  /**
+   * Sets factory for a WebSocket transport.
+   * <p>
+   * This method allows you to use a different WebSocket implementation. By default, the Java SDK
+   * uses the {@code nv-websocket-client} WebSocket client implementation.
+   *
+   * @param transportFactory WebSocket transport factory.
+   * @return {@link RtmClientBuilder} instance.
    * @see WebSocketTransportFactory
    */
-  public RtmClientBuilder setTransportFactory(TransportFactory transportFactory) {
+  public RtmClientBuilder setTransportFactory(AbstractTransportFactory transportFactory) {
     this.mTransportFactory = transportFactory;
     return this;
   }
