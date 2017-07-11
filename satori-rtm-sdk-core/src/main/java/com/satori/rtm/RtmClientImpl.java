@@ -48,39 +48,27 @@ class RtmClientImpl implements RtmClient {
   private Serializer mJsonSerializer;
   private boolean mShouldDispatchTransport;
 
-  public RtmClientImpl(
-      final URI uri,
-      final RtmClientListener userListener,
-      final TransportFactory transportFactory,
-      final AuthProvider authProvider,
-      final ExecutorService dispatcher,
-      final ScheduledExecutorService scheduler,
-      final Serializer jsonSerializer,
-      final boolean shouldDispatchTransport,
-      final boolean isAutoReconnect,
-      final long minReconnectAttempts,
-      final long maxReconnectAttempts,
-      final int pendingActionQueueLength) {
-    this.mUserListener = TryCatchProxy.wrap(userListener, RtmClientListener.class);
-    this.mAuthProvider = authProvider;
-    this.mTransportFactory = transportFactory;
-    this.mJsonSerializer = jsonSerializer;
+  public RtmClientImpl(final URI uri, final RtmClientBuilder opts) {
     this.mURI = uri;
+    this.mUserListener = TryCatchProxy.wrap(opts.mUserListener, RtmClientListener.class);
+    this.mAuthProvider = opts.mAuthProvider;
+    this.mTransportFactory = opts.mTransportFactory;
+    this.mJsonSerializer = opts.mJsonSerializer;
     // create scheduler if it wasn't passed from the builder
-    this.mIsExtScheduler = (null != scheduler);
-    this.mIsExtDispatcher = (null != dispatcher);
+    this.mIsExtScheduler = (null != opts.mScheduledExecutorService);
+    this.mIsExtDispatcher = (null != opts.mDispatcher);
     this.mScheduledExecutorService =
-        mIsExtScheduler ? scheduler : Executors.newScheduledThreadPool(1);
-    this.mDispatcher = mIsExtDispatcher ? dispatcher : new TrampolineExecutorService();
-    this.mShouldDispatchTransport = shouldDispatchTransport;
-    this.mRtmService = RtmService.create(pendingActionQueueLength, mDispatcher);
+        mIsExtScheduler ? opts.mScheduledExecutorService : Executors.newScheduledThreadPool(1);
+    this.mDispatcher = mIsExtDispatcher ? opts.mDispatcher : new TrampolineExecutorService();
+    this.mShouldDispatchTransport = opts.mShouldDispatchTransport;
+    this.mRtmService = RtmService.create(opts.mPendingActionQueueLength, mDispatcher);
     this.mClientFSM = new RtmClientStateMachine(
         this,
         new RtmClientStateMachineListener(),
         mScheduledExecutorService,
-        isAutoReconnect,
-        minReconnectAttempts,
-        maxReconnectAttempts,
+        opts.mIsAutoReconnect,
+        opts.mMinReconnectInterval,
+        opts.mMaxReconnectInterval,
         mDispatcher
     );
     mDispatcher.submit(new Runnable() {

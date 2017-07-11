@@ -47,19 +47,19 @@ public class RtmClientBuilder {
   private static final String RTM_VER = "v2";
   private final String mEndpoint;
   private final String mAppKey;
-  private int mConnectionTimeout = 60000;
-  private long mMinReconnectInterval = 1000;
-  private long mMaxReconnectInterval = 120000;
-  private int mPendingActionQueueLength = DEFAULT_PENDING_QUEUE_LENGTH;
-  private ScheduledExecutorService mScheduledExecutorService;
-  private RtmClientListener mUserListener = new RtmClientAdapter() {
-  };
-  private boolean mIsAutoReconnect = true;
-  private TransportFactory mTransportFactory;
-  private AuthProvider mAuthProvider;
-  private Serializer mJsonSerializer;
-  private boolean mShouldDispatchTransport = true;
-  private ExecutorService mDispatcher;
+
+  int mConnectionTimeout = 60000;
+  long mMinReconnectInterval = 1000;
+  long mMaxReconnectInterval = 120000;
+  int mPendingActionQueueLength = DEFAULT_PENDING_QUEUE_LENGTH;
+  ScheduledExecutorService mScheduledExecutorService;
+  RtmClientListener mUserListener = new RtmClientAdapter() {};
+  boolean mIsAutoReconnect = true;
+  TransportFactory mTransportFactory;
+  AuthProvider mAuthProvider;
+  Serializer mJsonSerializer;
+  boolean mShouldDispatchTransport = true;
+  ExecutorService mDispatcher;
 
   /**
    * Creates a instance of a client builder for specific endpoint and application key.
@@ -150,17 +150,7 @@ public class RtmClientBuilder {
 
     return new RtmClientImpl(
         createUri(mEndpoint, mAppKey),
-        mUserListener,
-        mTransportFactory,
-        mAuthProvider,
-        mDispatcher,
-        mScheduledExecutorService,
-        mJsonSerializer,
-        mShouldDispatchTransport,
-        mIsAutoReconnect,
-        mMinReconnectInterval,
-        mMaxReconnectInterval,
-        mPendingActionQueueLength
+        this
     );
   }
 
