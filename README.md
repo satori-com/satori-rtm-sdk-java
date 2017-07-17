@@ -45,9 +45,7 @@ For more information, see the [slf4j](https://www.slf4j.org/) documentation.
 
 # JSON Library
 
-Satori Java SDK could work with different JSON libraries. By default, Java SDK uses the [google-gson](https://github.com/google/gson) library for JSON serialization.
-
-You can specify your own serialization module in `ClientBuilder` to use a different JSON library.
+By default, Java SDK uses the [google-gson](https://github.com/google/gson) library for JSON serialization.
 
 Satori Java SDK has adapter to use [Jackson2](http://wiki.fasterxml.com/JacksonHome) library. To use it use assembly with Jackson2 support.
 
@@ -56,6 +54,8 @@ dependencies {
     compile group: 'com.satori', name: 'satori-rtm-sdk-jackson2', version:'1.0.3'
 }
 ```
+
+You can also specify your own serialization module in `ClientBuilder` to use a own JSON library instead of gson and jackson2.
 
 # Using HTTPS proxy
 
@@ -67,6 +67,66 @@ The following is an example how to set a proxy server:
 RtmClient client = new RtmClientBuilder("YOUR_ENDPOINT", "YOUR_APPKEY")
     .setHttpsProxy(URI.create("http://127.0.0.1:3128"))
     .build();
+```
+
+# Android integration
+
+## ProGuard settings
+
+Add the following lines to your ProGuard config (usually `proguard-rules.pro`) to make SDK works when build minification is enabled:
+
+```
+# if you are using assembly with gson json library
+-keep class sun.misc.Unsafe { *; }
+-keepattributes Signature, *Annotation*, EnclosingMethod
+
+# if you are using assembly with jackson2 json library
+-dontwarn com.fasterxml.jackson.databind.**
+-keep class org.codehaus.**
+-keepnames class com.fasterxml.jackson.** { *; }
+
+# guava
+-dontwarn com.google.errorprone.annotations.**
+-dontwarn com.google.j2objc.annotations.**
+-dontwarn java.lang.ClassValue
+-dontwarn javax.annotation.**
+-dontwarn javax.inject.**
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+-dontwarn sun.misc.Unsafe
+-keep class com.google.j2objc.annotations.** { *; }
+-keep class java.lang.ClassValue { *; }
+-keep class org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement { *; }
+-keep class com.google.common.util.concurrent.AbstractFuture** { <fields>; }
+
+# slf4j
+-dontwarn org.slf4j.**
+
+# satori-rtm-sdk
+-keep class com.satori.rtm.connection.StaticJsonBinder { *; }
+-keep class com.satori.rtm.model.** { *; }
+-keep class com.satori.rtm.auth.** { *; }
+```
+
+## "Duplicate files copied in APK META-INF/LICENCE" error when using Jackson2 assembly
+
+If you see the following build exception:
+
+```
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:transformResourcesWithMergeJavaResForRelease'.
+> com.android.build.api.transform.TransformException: com.android.builder.packaging.DuplicateFileException: Duplicate files copied in APK META-INF/LICENSE
+        File1: /Users/user/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.8.8/1ed81c0e4eb2d261d1da0a3a45bd6b199fb5cf9a/jackson-annotations-2.8.8.jar
+        File2: /Users/user/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.8.8/bf88c7b27e95cbadce4e7c316a56c3efffda8026/jackson-databind-2.8.8.jar
+        File3: /Users/user/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.8.8/d478fb6de45a7c3d2cad07c8ad70c7f0a797a020/jackson-core-2.8.8.jar
+```
+
+Add below lines in your application level gradle config:
+```
+packagingOptions {
+    exclude 'META-INF/LICENSE'
+}
 ```
 
 # Running Tests
