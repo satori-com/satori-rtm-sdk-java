@@ -15,15 +15,15 @@ import com.satori.rtm.model.SubscriptionData;
 import com.satori.rtm.model.SubscriptionError;
 import com.satori.rtm.model.SubscriptionInfo;
 import com.satori.rtm.model.UnsubscribeRequest;
+import com.satori.rtm.transport.AbstractTransportFactory;
 import com.satori.rtm.transport.Transport;
 import com.satori.rtm.transport.TransportException;
-import com.satori.rtm.transport.TransportFactory;
 import com.satori.rtm.transport.WebSocketTransport;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 
-class SandboxWebSocketFactory implements TransportFactory {
+class SandboxWebSocketFactory extends AbstractTransportFactory {
   private final Serializer mSerializer;
   private WebSocketFactory mWebSocketFactory;
 

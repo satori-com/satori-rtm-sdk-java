@@ -15,7 +15,6 @@ import com.satori.rtm.model.SubscribeRequest;
 import com.satori.rtm.model.SubscriptionData;
 import com.satori.rtm.model.SubscriptionError;
 import com.satori.rtm.transport.TransportException;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
