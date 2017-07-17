@@ -1,15 +1,15 @@
 package com.satori.rtm;
 
 /**
- * Sets up the acknowledgement mode for an operation.
+ * Defines the acknowledgement mode for RTM operations.
  */
 public enum Ack {
   /**
-   * Operation doesn't need the acknowledgement from the RTM Service.
+   * RTM doesn't send an acknowledgement response to the operation.
    */
   NO,
   /**
-   * Operation should get the acknowledgement from the RTM Service.
+   * RTM sends acknowledgement response to the operation.
    */
   YES
 }

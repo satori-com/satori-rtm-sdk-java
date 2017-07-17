@@ -1,20 +1,20 @@
 package com.satori.rtm;
 
 /**
- * A callback for accepting the responses of the RTM Service
+ * A callback for any asynchronous call that can result in success or failure.
  */
 public interface Callback<V> {
   /**
-   * Invoked with the positive response is received.
+   * Called when an asynchronous call completes successfully.
    *
-   * @param result The RTM Service response.
+   * @param result the value returned
    */
   void onResponse(V result);
 
   /**
-   * Invoked when a negative response is received or request is canceled.
+   * Called when an asynchronous call fails to complete normally.
    *
-   * @param t The reason of failure.
+   * @param t failure encountered
    */
   void onFailure(Throwable t);
 }

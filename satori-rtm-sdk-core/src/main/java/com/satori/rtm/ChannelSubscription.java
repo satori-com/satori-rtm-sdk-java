@@ -20,8 +20,8 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
 
-/**
- * The subscription finite state machine manages all states and transitions for the subscription.
+/*
+ * Manages the states and transitions for a channel subscription, using a finite state machine.
  */
 class ChannelSubscription extends AbstractSubscription {
   private final static Logger LOG = LoggerFactory.getLogger(ChannelSubscription.class);

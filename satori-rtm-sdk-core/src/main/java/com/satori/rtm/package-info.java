@@ -1,4 +1,4 @@
 /**
- * Provides high-level SDK API and the state machine to manage a connection state.
+ * RTM client and connection classes. Use {@link com.satori.rtm.RtmClientBuilder} to create an RTM client.
  */
 package com.satori.rtm;
