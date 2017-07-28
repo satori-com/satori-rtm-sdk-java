@@ -5,11 +5,11 @@ package com.satori.rtm;
  */
 public enum Ack {
   /**
-   * RTM doesn't send an acknowledgement response to the operation.
+   * RTM doesn't send an acknowledgement response for the operation.
    */
   NO,
   /**
-   * RTM sends acknowledgement response to the operation.
+   * RTM sends an acknowledgement response for the operation.
    */
   YES
 }

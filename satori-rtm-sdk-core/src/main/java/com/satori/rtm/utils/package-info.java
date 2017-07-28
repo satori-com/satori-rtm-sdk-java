@@ -1,4 +1,4 @@
 /**
- * Utility classes for the Java SDK.
+ * Utility classes for the RTM SDK.
  */
 package com.satori.rtm.utils;

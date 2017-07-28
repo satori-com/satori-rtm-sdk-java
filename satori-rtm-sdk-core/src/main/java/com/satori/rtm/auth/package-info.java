@@ -1,4 +1,4 @@
 /**
- * Classes to manage authentication and authorization.
+ * Classes that manage authentication.
  */
 package com.satori.rtm.auth;

@@ -15,10 +15,8 @@ public class SubscriptionConfig {
   final private SubscriptionListener mUserListeners;
 
   /**
-   * Creates a subscription configuration to use in the subscription requests, with a specific
-   * subscription modes.
-   *
-   * @param modes    subscription modes
+   * Creates a subscription configuration with a set of subscription modes and a subscription listener.
+  * @param modes    subscription modes
    * @param listener subscription listener
    */
   public SubscriptionConfig(EnumSet<SubscriptionMode> modes, SubscriptionListener listener) {
@@ -31,18 +29,22 @@ public class SubscriptionConfig {
 
   /**
    * Gets the current subscription {@code position}.
+   * <p>
+   * See the section "...with position" in the chapter "Subscribing" of <em>Satori Docs</em> for more information.
    *
-   * @return subscription position
+   * @return current position for the subscription associated with this configuration
    */
   public String getPosition() {
     return mSubscribeRequest.getPosition();
   }
 
   /**
-   * Sets a subscription {@code position} for the subscription request.
+   * Sets the desired subscription {@code position} for a subscription request.
+   * <p>
+   * See the section "...with position" in the chapter "Subscribing" of <em>Satori Docs</em> for more information.
    *
-   * @param position subscripttion position
-   * @return SubscriptionConfig instance
+   * @param position desired position for the subscription associated with this configuration
+   * @return the current {@code SubscriptionConfig} object
    */
   public SubscriptionConfig setPosition(String position) {
     mSubscribeRequest.setPosition(position);
@@ -53,10 +55,10 @@ public class SubscriptionConfig {
    * Sets the history {@code age} value to use in the subscription request.
    * <p>
    * To use this method, you also have to configure history settings for the channel in the
-   * Developer Portal.
+   * Dev Portal.
    *
-   * @param age age value in seconds.
-   * @return the current {@code SubscriptionConfig}.
+   * @param age age value in seconds
+   * @return the current {@code SubscriptionConfig} object
    */
   public SubscriptionConfig setAge(Integer age) {
     if (null == age) {
@@ -74,11 +76,10 @@ public class SubscriptionConfig {
   /**
    * Sets the history {@code count} value to use in subscription requests.
    * <p>
-   * To use this method, you also have to configure history settings for the channel in the
-   * Developer Portal.
-   *
+   * To use this method, you also have to configure channel history settings in the
+   * Dev Portal.
    * @param count count value
-   * @return the current {@code SubscriptionConfig}.
+   * @return the current {@code SubscriptionConfig} object
    */
   public SubscriptionConfig setCount(Integer count) {
     if (null == count) {
@@ -94,10 +95,11 @@ public class SubscriptionConfig {
   }
 
   /**
-   * Sets a streamfilter value to use with a filter in a channel subscription.
+   * Sets the streamfilter for the subscription.
    * <p>
    * A streamfilter is an SQL statement that selects and processes messages in the channel.
-   *
+   * <p>
+   * See the chapter "Views (formerly filters)" in the <em>Satori Docs</em> for more information
    * @param filter filter string
    * @return the current {@code SubscriptionConfig}
    */
@@ -109,6 +111,7 @@ public class SubscriptionConfig {
   /**
    * Sets the period of time, in seconds, that RTM runs the streamfilter on the channel before it
    * sends the result to the RTM client.
+   * See the chapter "Views (formerly filters)" in the <em>Satori Docs</em> for more information
    *
    * @param period time period
    * @return the current {@code SubscriptionConfig}
@@ -122,18 +125,16 @@ public class SubscriptionConfig {
    * Called when a client application receives a subscription error from RTM.
    *
    * @param error subscription error
-   * @return {@code true} if the error is not recoverable, otherwise {@code false}
+   * @return {@code true} if the error isn't recoverable, otherwise {@code false}
    */
   protected boolean onError(SubscriptionError error) {
     return true;
   }
 
-  /**
+  /*
    * Creates a PDU body for a subscription request.
-   * <p>
-   * Override this method if custom resubscription behaviour is needed.
+   * Override this method if custom re-subscription behaviour is needed.
    *
-   * @param subscriptionId {@code subscription_id} to subscribe to
    */
   protected SubscribeRequest createSubscribeRequest(String subscriptionId) {
     SubscribeRequest request = new SubscribeRequest();

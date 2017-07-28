@@ -1,7 +1,7 @@
 package com.satori.rtm.model;
 
 /**
- * Represents the body Protocol Data Unit (PDU) for a positive reply to a subscribe request.
+ * Represents the body Protocol Data Unit (<strong>PDU</strong>) for a positive reply to a subscribe request.
  * <p>
  * The PDU has the following basic structure for a positive reply:
  * <pre>{@literal

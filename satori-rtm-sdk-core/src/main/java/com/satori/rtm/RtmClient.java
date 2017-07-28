@@ -15,32 +15,37 @@ import com.satori.rtm.transport.TransportException;
 import java.util.EnumSet;
 
 /**
- * The RtmClient interface is the main entry point for accessing the RTM Service. RtmClient
- * instances are thread-safe so you can reuse them freely across multiple threads.
+ * An {@code RtmClient} is the main entry point for accessing RTM.
  * <p>
- * RtmClient instance is built with {@link RtmClientBuilder}. RtmClient must be started
- * explicitly with {@link #start()} method to establish connection to RTM.
+ * To create an RTM client, use {@link RtmClientBuilder}. To connect a client to RTM,
+ * you must call {@link #start}.
  * <p>
- * By default, the SDK attempts to reconnect to the RTM Service if the connection to RTM Service
- * fails for any reason. To disable this use {@link RtmClientBuilder#setAutoReconnect(boolean)}
- * method.
+ * By default, the RTM SDK attempts to reconnect to RTM if the connection to RTM
+ * fails for any reason. To disable this behavior, call
+ * {@link RtmClientBuilder#setAutoReconnect(boolean) RtmClientBuilder.setAutoReconnect()}.
  * <p>
- * Any operation performed when client is in offline is queued and performed
- * when client reconnects to RTM. To disable this behaviour or change the length of this queue use
- * {@link RtmClientBuilder#setPendingActionQueueLength(int)} method.
- *
- * <p>Here is an example of how RtmClient is used to subscribe for a channel:
- *
- * <pre>
+ * Operations performed when client is offline are queued and performed
+ * when the client reconnects to RTM. To disable this behaviour or change the length of this queue, call
+ * {@link RtmClientBuilder#setPendingActionQueueLength(int) RtmClientBuilder.setPendingActionQueueLength()}.
+ * <p>
+ * {@code RtmClient} instances are thread-safe so you can reuse them freely across multiple threads.
+ * <p>
+ * This is an example of to use an RTM client to subscribe to a channel:
+ * <pre>{@code
  * RtmClient client = new RtmClientBuilder(YOUR_ENDPOINT, YOUR_APPKEY)
+ *   // Sets a listener for RTM lifecycle events
  *   .setListener(new RtmClientAdapter() {
+ *      // When the client successfully connects to RTM
  *     &#64;Override
  *     public void onEnterConnected(RtmClient client) {
  *       System.out.println("Connected to Satori RTM!");
  *     }
  *   })
+ *   // Builds the client instance
  *   .build();
+ * // Subscribe to "my_channel" and listen for incoming messages
  * client.createSubscription("my_channel", SubscriptionMode.SIMPLE, new SubscriptionAdapter() {
+ *   // Displays incoming messages
  *   &#64;Override
  *   public void onSubscriptionData(SubscriptionData data) {
  *     for (AnyJson json: data.getMessages()) {
@@ -48,47 +53,53 @@ import java.util.EnumSet;
  *     }
  *   }
  * });
- * client.start();
- * </pre>
+ * // Connects the client to RTM
+ * client.start();}</pre>
  */
 public interface RtmClient {
   /**
    * Starts the client, which then tries to connect to RTM asynchronously.
    * <p>
-   * By default, the SDK attempts to reconnect to the RTM Service if the connection to RTM Service
+   * By default, the RTM SDK attempts to reconnect to RTM if the connection to RTM
    * fails for any reason.
    * <p>
-   * To provide callbacks that respond to the events in the RtmClient or the connection lifestyle,
-   * use {@link RtmClientBuilder#setListener(RtmClientListener)} method.
-   *
-   * @see RtmClientListener#onEnterConnecting(RtmClient)
+   * To provide callbacks for events in the client or the connection lifecycle,
+   * call {@link RtmClientBuilder#setListener(RtmClientListener) RtmClientBuilder.setListener()}.
+   * For example,
+   * {@link RtmClientListener#onEnterConnected(RtmClient) RtmClientListener.onEnterConnected()} is
+   * called when the RTM client starts
+   * connecting to
+   * RTM.
    */
   void start();
 
   /**
-   * Stops the client. The RTM SDK tries to close the WebSocket connection asynchronously and does
-   * not start it again unless you call {@link RtmClient#start()}.
+   * Stops the client.
+   * <p>
+   * The RTM SDK tries to close the WebSocket connection asynchronously and doesn't start it again unless you call
+   * {@link #start}.
    * <p>
    * Use this method to explicitly stop all interaction with RTM.
-   *
-   * @see RtmClientListener#onEnterStopped(RtmClient)
+   * {@link RtmClientListener#onEnterStopped(RtmClient) RtmClientListener.onEnterStopped()} is
+   * called when the client enters the
+   * stopped state.
    */
   void stop();
 
   /**
-   * Restarts the client by calling {@link RtmClient#stop} followed by {@link RtmClient#start}.
+   * Restarts the client by calling {@link #stop} followed by {@link #start}.
    */
   void restart();
 
   /**
    * Stops the client, terminates threads, and cleans up all allocated resources.
    * <p>
-   * You cannot use the instance of the {@link RtmClient} when it is shut down.
+   * After you call {@code shutdown()}, you can't use your RTM client.
    */
   void shutdown();
 
   /**
-   * Returns {@code true} if the client is completely connected.
+   * Returns {@code true} if the RTM client is completely connected.
    * <p>
    * The client is connected when:
    * <ul>
@@ -103,9 +114,14 @@ public interface RtmClient {
   /**
    * Creates a subscription to the specified channel.
    * <p>
+   * To create a subscription that has a streamfilter, call
+   * {@link #createSubscription(String, SubscriptionConfig) createSubscription()}.
+   * <p>
    * You can subscribe at any time. The RTM SDK manages the subscription and sends a subscribe
-   * request when the RtmClient is connected. Use {@code modes} to tell the SDK how to resubscribe
+   * request when the RTM client is connected. Use {@code modes} to tell the SDK how to resubscribe
    * after a dropped connection.
+   * <p>
+   * To provide callbacks for events in the subscription lifecycle, use {@link SubscriptionListener}.
    *
    * @param channel  name of the channel
    * @param modes    subscription modes
@@ -118,11 +134,16 @@ public interface RtmClient {
   /**
    * Creates a subscription to the specified subscription id.
    * <p>
+   * This form of {@code createSubscription} lets you specify a streamfilter.
+   * See {@link SubscriptionConfig#setFilter(String) SubscriptionConfig.setFilter()}. You set a
+   * {@code SubscriptionListener} and subscription modes
+   * in the {@link SubscriptionConfig#SubscriptionConfig(EnumSet, SubscriptionListener) SubscriptionConfig} constructor.
+   <p>
    * You can subscribe at any time. The RTM SDK manages the subscription and sends a subscribe
    * request when the RtmClient is connected. Use the {@code subscriptionConfig} parameter to set
-   * various subscription options such as filter, history, position etc.
+   * various subscription options such as streamview, history, position, and so forth.
    * <p>
-   * If filter is not specified then subscription id is used as a channel name.
+   * If you don't specify a streamview in the configuration, {@code channelOrSubId} is treated as a channel name.
    *
    * @param channelOrSubId     name of the channel or subscription id
    * @param subscriptionConfig subscription configuration
@@ -132,8 +153,8 @@ public interface RtmClient {
   /**
    * Removes the subscription with the specific subscription id.
    * <p>
-   * Use the callback methods in {@link SubscriptionListener} to respond to the events in the
-   * subscription lifecycle.
+   * Removing a subscription triggers related callbacks in {@link SubscriptionListener}. To set this listener,
+   * call {@link #createSubscription(String, EnumSet, SubscriptionListener) createSubscription()}.
    *
    * @param subscriptionId subscription id
    */
@@ -143,15 +164,32 @@ public interface RtmClient {
    * Publishes a message to a channel asynchronously.
    * <p>
    * To get the response returned by RTM, call {@link ListenableFuture#get}, or pass
-   * {@code ListenableFuture} to {@link com.google.common.util.concurrent.Futures#addCallback} to
-   * set up a callback.
+   * {@code ListenableFuture} to {@link com.google.common.util.concurrent.Futures#addCallback} to set up a callback.
    * <p>
-   * {@link ListenableFuture} can complete with the following execution exceptions:
+   * If the publish operation fails, then the exception is passed to the {@link ListenableFuture}
+   * object:
    * <ul>
-   * <li>{@link IllegalStateException}: RTM SDK fails to add the message to the pending queue
+   *     <li>
+   *         If you call {@link ListenableFuture#get() ListenableFuture.get()} to get the result,
+   *         it throws an
+   *         {@link java.util.concurrent.ExecutionException} and passes the original exception to it.
+   *     </li>
+   *     <li>
+   *         If you call
+   *         {@link com.google.common.util.concurrent.Futures#addCallback Futures.addCallback()} to
+   *         get the result,
+   *         the exception is passed to
+   *         {@link com.google.common.util.concurrent.FutureCallback#onFailure FutureCallback.onFailure()}
+   *         unaltered.
+   *     </li>
+   * </ul>
+   * <p>
+   * The publish operation can fail with the following execution exceptions:
+   * <ul>
+   * <li>{@link IllegalStateException}: RTM SDK failed to add the message to the pending queue
    * because the queue is full.</li>
-   * <li>{@link PduException}: an RTM error occurs. For example, this exception is thrown if the
-   * client is not authorized to publish to the specified channel.</li>
+   * <li>{@link PduException}: an RTM error occured. For example, this exception is thrown if the
+   * client isn't authorized to publish to the specified channel.</li>
    * <li>{@link TransportException}: a WebSocket transport error occurred.</li>
    * </ul>
    *
@@ -159,22 +197,25 @@ public interface RtmClient {
    * @param message message to publish
    * @param ack     determines if RTM should acknowledge the publish operation
    * @param <T>     type of the {@code message} parameter
-   * @return result of the publish operation, returned asynchronously
+   * @return a {@link PublishReply}
    */
   <T> ListenableFuture<Pdu<PublishReply>> publish(String channel, T message, Ack ack);
 
   /**
-   * Returns the current connection or {@code null} if the client is not connected.
-   *
-   * @return Connection, or null if client is not connected.
+   * Gets the current {@link Connection}.
+   * <p>
+   * If the client isn't connected, this method returns {@code null}.
+   * @return {@link Connection} or null if client isn't connected.
    */
   Connection getConnection();
 
   /**
-   * Reads the value of the specified key from a key-value store asynchronously.
+   * Reads the value of the specified key from a key-value store. The operation is asynchronous.
    * <p>
-   * The return value described in the {@link #publish(String, Object, Ack)} method.
-   *
+   * The documentation for {@link #publish(String, Object, Ack)} publish()} describes how to get
+   * the method response,
+   * and how to handle errors.
+   * <p>
    * @param key key name
    * @return result of the read operation, returned asynchronously
    * @see #publish(String, Object, Ack)
@@ -182,9 +223,12 @@ public interface RtmClient {
   ListenableFuture<Pdu<ReadReply>> read(String key);
 
   /**
-   * Reads the value from a key-value store asynchronously.
+   * Reads the value of the specified key from a key-value store. The operation is asynchronous.
    * <p>
-   * The return value described in the {@link #publish(String, Object, Ack)} method.
+   * The documentation for {@link #publish(String, Object, Ack) publish()} describes how to get
+   * the method response,
+   * and how to handle errors.
+   * <p>
    *
    * @param request read request
    * @return asynchronous result of the read request
@@ -192,9 +236,12 @@ public interface RtmClient {
   ListenableFuture<Pdu<ReadReply>> read(ReadRequest request);
 
   /**
-   * Writes the specified key-value pair to the key-value store asynchronously.
+   * Writes the specified key-value pair to a key-value store. The operation is asynchronous.
    * <p>
-   * The return value described in the {@link #publish(String, Object, Ack)} method.
+   * The documentation for {@link #publish(String, Object, Ack) publish()} describes how to get
+   * the method response,
+   * and how to handle errors.
+   * <p>
    *
    * @param key   key name
    * @param value value to store
@@ -206,9 +253,12 @@ public interface RtmClient {
   <T> ListenableFuture<Pdu<WriteReply>> write(String key, T value, Ack ack);
 
   /**
-   * Writes the value to a key-value store asynchronously.
+   * Writes the specified key-value pair to a key-value store. The operation is asynchronous.
    * <p>
-   * The return value described in the {@link #publish(String, Object, Ack)} method.
+   * The documentation for {@link #publish(String, Object, Ack) publish()} describes how to get
+   * the method response,
+   * and how to handle errors.
+   * <p>
    *
    * @param writeRequest write request
    * @param ack          determines if RTM should acknowledge the write operation
@@ -219,9 +269,12 @@ public interface RtmClient {
 
 
   /**
-   * Deletes the value of the specified key from the key-value store asynchronously.
+   * Deletes the value of the specified key from the key-value store. The operation is asynchronous.
    * <p>
-   * The return value described in the {@link #publish(String, Object, Ack)} method.
+   * The documentation for {@link #publish(String, Object, Ack) publish()} describes how to get
+   * the method response,
+   * and how to handle errors.
+   * <p>
    *
    * @param key key name
    * @param ack determines if RTM should acknowledge the delete operation

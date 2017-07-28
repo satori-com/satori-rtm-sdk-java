@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * The connection finite state machine manages all states and transitions for entire connection
  * <p/>
- * This class is not accessible for end users.
+ * This class isn't accessible to end users.
  */
 class RtmClientStateMachine extends AbstractStateMachine<RtmClientStateMachine.AbstractState> {
   private final static Logger LOG = LoggerFactory.getLogger(RtmClientStateMachine.class);

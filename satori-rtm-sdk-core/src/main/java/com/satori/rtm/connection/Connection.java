@@ -29,10 +29,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Access the RTM Service on the connection level to connect to the RTM Service, send and receive PDUs, and wait
- * for responses from the RTM Service.
+ * Access RTM at the connection level to connect, send and receive PDUs, and wait
+ * for responses.
  * <p>
- * Create a {@code Connection} with the {@link Connection#create(URI, TransportFactory, Serializer)} method.
+ * Create a {@code Connection} with the {@link Connection#create(URI, TransportFactory, Serializer) create()} method.
  * <p>
  * <strong>Code Example</strong>
  * <pre>
@@ -61,13 +61,13 @@ public class Connection {
   }
 
   /**
-   * Creates a {@link Connection} object for a specific RTM Service endpoint {@code URI}.
+   * Creates a {@link Connection} object for a specific RTM endpoint {@code URI}.
    *
-   * @param uri              RTM Service endpoint.
-   * @param transportFactory Transport factory.
-   * @param serializer       Json serializer/deserializer.
+   * @param uri              RTM endpoint
+   * @param transportFactory transport factory
+   * @param serializer       JSON serializer
    * @return {@link Connection}.
-   * @throws TransportException Could not create transport for the {@code URI}.
+   * @throws TransportException couldn't create transport for the {@code URI}
    */
   public static Connection create(
       URI uri,
@@ -88,15 +88,11 @@ public class Connection {
   }
 
   /**
-   * Connects to the RTM Service, using the connection created with and performs transport-specific connect
-   * operations.
-   * <p>
-   * For example, the method performs the WebSocket handshake and establishes the WebSocket connection.
+   * Connects to RTM.
    *
-   * @param listener   Implementation of the {@link ConnectionListener}.
-   * @param dispatcher Construct that waits for and dispatches events from transport. Could be null. In this case all
-   *                   events will be fired from transport thread.
-   * @throws TransportException Transport cannot connect.
+   * @param listener   {@link ConnectionListener} object
+   * @param dispatcher transport event dispatcher. If {@code null}, all events are fired from the transport thread.
+   * @throws TransportException the transport can't connect
    */
   public void connect(ConnectionListener listener, ExecutorService dispatcher)
       throws TransportException {
@@ -118,19 +114,17 @@ public class Connection {
   }
 
   /**
-   * Asynchronously sends a Protocol Data Unit (PDU) to the RTM Service without acknowledge from
-   * the RTM Service.
+   * Asynchronously sends a Protocol Data Unit (<strong>PDU</strong>) to RTM without acknowledgement
    * <p>
-   * This method combines the specified
-   * operation with the PDU body into a PDU and sends it to the RTM Service. The PDU body must be able to be
-   * serialized into a JSON object.
+   * This method creates a PDU from an operation and an object. It then sends the PDU to RTM. The object
+   * must be serializable into a JSON object.
    * <p>
-   * The <a href="http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/util/concurrent/ListenableFuture.html">ListenableFuture</a>
-   * returned by this method is complete when the request is sent to the RTM Service.
+   * This method returns a <a href="http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/util/concurrent/ListenableFuture.html">ListenableFuture</a>
+   * that completes when the request is sent to RTM.
    *
-   * @param operation PDU operation, for example, {@code "rtm/publish"}.
-   * @param body      PDU body.
-   * @return Result of an asynchronous send operation.
+   * @param operation PDU operation, for example, {@code "rtm/publish"}
+   * @param body      PDU body
+   * @return result of the asynchronous send operation
    */
   public ListenableFuture<Void> sendNoAck(String operation, Object body) {
     ListenableFuture<PduRaw> raw = send(new Pdu<Object>(operation, body, null));
@@ -144,28 +138,27 @@ public class Connection {
   }
 
   /**
-   * Asynchronously sends a Protocol Data Unit (PDU) to the RTM Service.
+   * Asynchronously sends a Protocol Data Unit (<strong>PDU</strong>) to RTM.
    * <p>
-   * This method combines the specified operation with the PDU body into a PDU and
-   * sends it to the RTM Service. The PDU body must be able to be serialized into a JSON object.
+   * This method creates a PDU from an operation and an object. It then sends the PDU to RTM. The object
+   * must be serializable into a JSON object.
    * <p>
-   * With this method, use the {@code responseClazz} parameter to specify the format of the PDU body returned
-   * by the RTM Service. The body of the PDU is converted to the format {@code responseClazz} parameter before
-   * it is returned.
+   * Use {@code responseClazz} to specify the format of the PDU body returned by RTM. The body is converted to an
+   * object of type {@code responseClazz} before it's returned.
    * <p>
-   * The <a href="http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/util/concurrent/ListenableFuture.html">ListenableFuture</a>
-   * returned by this method is complete when the PDU response is received from the RTM Service.
+   * This method returns a <a href="http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/util/concurrent/ListenableFuture.html">ListenableFuture</a>
+   * that completes when a response is received from RTM.
    * <p>
    * The {@code ListenableFuture} can fail due to the following error:
    * <ul>
-   * <li>{@link PduException} - The RTM Service returns a negative response.</li>
+   * <li>{@link PduException}: an RTM error occured.</li>
    * </ul>
    *
-   * @param operation     PDU operation, for example, {@code "rtm/publish"}.
-   * @param body          PDU body.
-   * @param responseClazz Instance of the response class.
-   * @param <T>           Type of response class.
-   * @return Result of an asynchronous send operation.
+   * @param operation     PDU operation, for example, {@code "rtm/publish"}
+   * @param body          PDU body
+   * @param responseClazz a {@link Class} instance of the response object type
+   * @param <T>           the response object type
+   * @return result of the send operation
    */
   public <T> ListenableFuture<Pdu<T>> send(String operation, Object body,
                                            final Class<T> responseClazz) {
@@ -182,24 +175,23 @@ public class Connection {
   }
 
   /**
-   * Asynchronously sends a Protocol Data Unit (PDU) to the RTM Service. The typed response from
-   * the RTM Service is passed to the callback.
+   * Asynchronously sends a Protocol Data Unit (<strong>PDU</strong>) to RTM. The response from
+   * RTM is passed to the callback.
    * <p>
-   * This method combines the specified operation with the PDU body into a PDU and
-   * sends it to the RTM Service. The PDU body must be able to be serialized into a JSON object.
+   * This method creates a PDU from an operation and an object. It then sends the PDU to RTM. The object
+   * must be serializable into a JSON object.
    * <p>
-   * With this method, use the {@code responseClazz} parameter to specify the format of the PDU
-   * body returned by the RTM Service. The body of the PDU is converted to the format
-   * {@code responseClazz} parameter before it is returned.
+   * Use {@code responseClazz} to specify the format of the PDU body returned by RTM. The body is converted to an
+   * object of type {@code responseClazz} before it's returned.
    * <p>
-   * This method should be used when RTM sends multiple PDUs response. All incoming PDUs from the
-   * RTM Service will be passed to {@link Callback#onResponse(Object)}.
+   * Use this method when RTM responds with multiple PDUs. All of the response PDUs are passed to
+   * {@link Callback#onResponse(Object) callback.onResponse()}.
    *
-   * @param operation     PDU operation, for example, {@code "rtm/publish"}.
-   * @param body          PDU body.
-   * @param responseClazz Instance of the response class.
-   * @param callback      The callback to invoke when response is received.
-   * @param <T>           Type of response class.
+   * @param operation     PDU operation, for example, {@code "rtm/publish"}
+   * @param body          PDU body
+   * @param responseClazz a {@link Class} instance of the response object type
+   * @param callback      callback that RTM invokes with the response or responses
+   * @param <T>           the response object type
    */
   public <T> void sendWithCallback(String operation, Object body, final Class<T> responseClazz,
                                    final Callback<Pdu<T>> callback) {
@@ -219,10 +211,10 @@ public class Connection {
   }
 
   /**
-   * Stops a specific connection and releases all allocated resources. All communication with the RTM Service stops
-   * when you call this method and the events are not propagated to any listeners.
+   * Stops a specific connection and releases all allocated resources. All communication with RTM stops
+   * when you call this method and the events aren't propagated to any listeners.
    * <p>
-   * In general, use this method after the connection to the RTM Service is already closed and you need to clean up
+   * In general, use this method after the connection to RTM is already closed and you need to clean up
    * resources.
    */
   public void dispose() {
@@ -336,7 +328,7 @@ public class Connection {
     final String id = pdu.getId();
     final boolean isAckRequired = !Strings.isNullOrEmpty(id);
 
-    // if id is not null then add it to the map of response waiters
+    // if id isn't null, add it to the map of response waiters
 
     if (isAckRequired) {
       ResponseWaiter alreadyExistedWaiter = mResponseWaiters.putIfAbsent(id, responseWaiter);

@@ -324,14 +324,14 @@ class RtmClientImpl implements RtmClient {
 
     @Override
     public void onEnterConnected(RtmClient client) {
-      // inform rtm service that we are connected
+      // inform RTM that we're connected
       mRtmService.onConnected(mConnection);
       mUserListener.onEnterConnected(client);
     }
 
     @Override
     public void onLeaveConnected(RtmClient client) {
-      // inform rtm service that we are disconnected
+      // inform RTM that we're disconnected
       mRtmService.onDisconnected();
       mUserListener.onLeaveConnected(client);
     }

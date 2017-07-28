@@ -58,7 +58,7 @@ public class SubscriptionFromPositionTest {
   @Test
   public void failedToSubscribe() throws InvalidJsonException {
         /*
-         * We are not connected to the server
+         * We aren't connected to the server
          * Receive onConnect
          * Failed to subscribe to the channel
          * Receive unsubscribe

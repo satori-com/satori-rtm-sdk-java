@@ -8,7 +8,7 @@ package com.satori.rtm.model;
  * <p>
  * The {@code error_text}
  * field contains text that describes the error. This field is variable and
- * may change in the future, and should not be parsed. You can use this text, for example,
+ * may change in the future, and shouldn't be parsed. You can use this text, for example,
  * to include in error log files.
  * <p>
  * The following are specific {@code SubscriptionError} errors:
@@ -16,7 +16,7 @@ package com.satori.rtm.model;
  * <li>{@code out_of_sync} error as an unsolicited error</li>
  * </ul>
  * <p>
- * For more information on error messages from the RTM Service, see the <em>RTM API Reference</em>.
+ * For more information on error messages from RTM, see the <em>RTM API Reference</em>.
  *
  * <pre>{@literal
  * {

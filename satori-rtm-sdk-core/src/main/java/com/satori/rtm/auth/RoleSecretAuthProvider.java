@@ -14,16 +14,18 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * Implements the Role-Based authentication method.
+ * Provides authentication and authorization using a role-based authentication algorithm. The algorithm itself
+ * provides the authentication. Because the algorithm is based on user roles, you can use different roles to control
+ * authorization.
  * <p>
- * The Role-Based authentication method is a two-step authentication process based on the HMAC process,
- * using the MD5 hashing routine.
+ * {@code RoleSecretAuthProvider} is based on the <strong>HMAC</strong> process, using the <strong>MD5</strong> hashing
+ * routine:
  * <ul>
  * <li>The client obtains a nonce from the server in a handshake request.</li>
  * <li>The client then sends an authorization request with its role secret key hashed with the received nonce.</li>
  * </ul>
  * <p>
- * Obtain a role secret key from the Developer Portal for your application.
+ * Obtain the role secret key for your application from the Dev Portal.
  */
 public class RoleSecretAuthProvider implements AuthProvider {
   private final static String METHOD = "role_secret";
@@ -31,11 +33,11 @@ public class RoleSecretAuthProvider implements AuthProvider {
   private final String mRoleKey;
 
   /**
-   * Creates {@code RoleSecretAuthProvider} to perform the role-based authentication for a specific role and role secret
+   * Creates a {@code RoleSecretAuthProvider} to perform authentication for a specific role and role secret
    * key.
    *
-   * @param role    User role with which to authenticate.
-   * @param roleKey Role secret key from Developer Portal.
+   * @param role    user role to authenticate
+   * @param roleKey role secret key for the role (get from Dev Portal)
    */
   public RoleSecretAuthProvider(String role, String roleKey) {
     this.mRole = role;

@@ -1,9 +1,8 @@
 package com.satori.rtm;
 
 /**
- * An empty implementation of {@link RtmClientListener} interface.
+ * An empty implementation of the {@link RtmClientListener} interface.
  *
- * @see RtmClientListener
  */
 public abstract class RtmClientAdapter implements RtmClientListener {
   @Override

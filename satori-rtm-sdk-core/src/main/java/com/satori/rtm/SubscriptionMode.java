@@ -12,34 +12,51 @@ public enum SubscriptionMode {
   AUTO_RECONNECT;
 
   /**
-   * Tries to avoid data loss during reconnect, but may lose on slow connections.
+   * RTM tracks the {@code position} value for the subscription and
+   * tries to use it when resubscribing after the connection drops and the client reconnects.
+   * If the {@code position} points to an expired message, RTM fast-forwards to the earliest
+   * {@code position} that points to a non-expired message.
    * <p>
-   * SDK tracks the stream position from responses and tries to restore
-   * subscription from the latest known position on reconnects. RTM forwards the
-   * subscription to the earliest possible position if the stream position is expired
-   * on reconnect or a client has slow connection.
+   * This mode reliably goes to the next available message when RTM is resubscribing. However,
+   * RTM always fast-forwards the subscription if necessary, so it never returns an error for an
+   * 'out-of-sync' condition.
+   * <p>
+   * To learn more about position tracking and fast-forwarding, see the sections "... with position"
+   * and "... with fast-forward (advanced)" in the chapter "Subscribing" in <em>Satori Docs</em>.
    */
   public static final EnumSet<SubscriptionMode> RELIABLE =
       EnumSet.of(TRACK_POSITION, FAST_FORWARD);
 
   /**
-   * May lose data during reconnect and on slow connections.
+   * RTM doesn't track the {@code position} value for the
+   * subscription. Instead, when RTM resubscribes following a reconnection, it fast-forwards to
+   * the earliest {@code position} that points to a non-expired message.
    * <p>
-   * SDK doesn't track the stream position and restores subscription from it's
-   * actual position. RTM forwards the subscription to the earliest possible
-   * position if a client has slow connection.
+   * Because RTM always fast-forwards the subscription, it never returns an error for an
+   * 'out-of-sync' condition.
+   * <p>
+   * To learn more about position tracking and fast-forwarding, see the sections "... with position"
+   * and "... with fast-forward (advanced)" in the chapter "Subscribing" in <em>Satori Docs</em>.
+   * RTM SDK doesn't track the position of the next message for the subscription.
    */
   public static final EnumSet<SubscriptionMode> SIMPLE =
       EnumSet.of(FAST_FORWARD);
 
   /**
-   * Tries to avoid any data loss, could get out_of_sync and expired_position errors
-   * on reconnect and slow connections.
+   *
+   * RTM always tracks the {@code position} value for the subscription and tries to
+   * use it when resubscribing after the connection drops and the client reconnects.
    * <p>
-   * SDK tracks the stream position from responses and tries to restore
-   * subscription from the latest known position on reconnects. If the stream
-   * position is expired then an expired_position error is thrown. If connection is
-   * slow then out_of_sync error is thrown.
+   * If the position points to an expired message, the resubscription attempt fails. RTM sends an
+   * {@code expired_position} error and stops the subscription process.
+   * <p>
+   * If the subscription is active, and RTM detects that the current {@code position} value
+   * points to an expired message, the subscription is in an 'out-of-sync' state. In this case,
+   * RTM sends an {@code out_of_sync} error and unsubscribes you.
+   * <p>
+   * To learn more about position tracking and fast-forwarding, see the sections "... with position"
+   * and "... with fast-forward (advanced)" in the chapter "Subscribing" in <em>Satori Docs</em>.
+   * RTM always tracks the position of the next message for the subscription.
    */
   public static final EnumSet<SubscriptionMode> ADVANCED =
       EnumSet.of(TRACK_POSITION);

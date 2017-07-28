@@ -27,28 +27,31 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * A builder class for an {@link RtmClient}.
+ * An {@link RtmClient} builder class.
  *
- * <p>The following is an example shows how to use the {@code RtmClientBuilder} to construct a
- * {@link RtmClient} instance:
+ * <p>The following example demonstrates how to use {@code RtmClientBuilder} to get an RTM client:
  *
- * <pre>
- * RtmClient client = new RtmClientBuilder(YOUR_ENDPOINT, YOUR_APPKEY)
+ * <pre>{@code RtmClient client = new RtmClientBuilder(YOUR_ENDPOINT, YOUR_APPKEY)
+ *     // Sets a proxy server for the connection to RTM
  *     .setProxy(URI.create("http://127.0.0.1:3128"))
+ *     // Sets a listener for RTM lifecycle events
  *     .setListener(new RtmClientAdapter() {
+ *     // When the client successfully connects to RTM
  *       &#64;Override
  *       public void onEnterConnected(RtmClient client) {
  *         System.out.println("Connected to Satori RTM!");
  *       }
  *     })
- *     .build();
- * </pre>
+ *     // Builds the client instance
+ *     .build();}</pre>
  * <p>
  * NOTES:
  * <ul>
- * <li> the order of invocation of configuration methods does not matter</li>
- * <li> {@code YOUR_ENDPOINT} and {@code YOUR_APPKEY} are the values from your Satori project in
- * the Dev Portal</li>
+ *   <li> The order in which you call the "set" methods doesn't matter</li>
+ *   <li>
+ *     Get the values for {@code YOUR_ENDPOINT} and {@code YOUR_APPKEY} from your Satori project page, which you
+ *     access in the Dev Portal.
+ *   </li>
  * </ul>
  */
 public class RtmClientBuilder {
@@ -78,15 +81,15 @@ public class RtmClientBuilder {
   /**
    * Constructs a new client builder with the endpoint and the appkey.
    * <p>
-   * {@code RtmClientBuilder} instance is used to build {@link RtmClient} with various configuration
-   * settings. {@code RtmClientBuilder} follows the builder pattern, and it is typically used by
-   * first invoking various configuration methods to set desired options, and finally calling
-   * {@link #build()}.
+   * Use {@code RtmClientBuilder} to build an {@link RtmClient} with various configuration
+   * settings. {@code RtmClientBuilder} uses the builder pattern. First, call configuration methods to set desired
+   * options, and then call {@link #build()}.
    * <p>
-   * {@code endpoint} and {@code appKey} are the values from your Satori project in the Dev Portal.
+   *   Get the values for {@code endpoint} and {@code appKey} from your Satori project page, which you
+   *   access in the Dev Portal.
    *
-   * @param endpoint endpoint from Satori RTM Project
-   * @param appKey appkey from Satori RTM Project
+   * @param endpoint endpoint from your project page in Dev Portal
+   * @param appKey appkey from your project page in Dev Portal
    */
   public RtmClientBuilder(String endpoint, String appKey) {
     if (Strings.isNullOrEmpty(endpoint)) {
@@ -153,9 +156,9 @@ public class RtmClientBuilder {
   }
 
   /**
-   * Builds a {@link RtmClient} with the configure properties.
+   * Builds an {@link RtmClient} with the configured properties.
    * <p>
-   * Call this method <strong>after</strong> you've set your custom client properties.
+   * Call this method <strong>after</strong> you've set properties.
    *
    * @return RTM client
    */
@@ -213,12 +216,13 @@ public class RtmClientBuilder {
   /**
    * Sets the length of offline queue.
    * <p>
-   * The offline queue is used to temporary store the user's actions when a connection to RTM isn't
+   * The offline queue is used to temporarily store the user's actions when a connection to RTM isn't
    * established. These actions are performed when client reconnects to RTM.
    * <p>
-   * A length of zero disables the offline queue. The default value is {@value RtmClientBuilder#DEFAULT_PENDING_QUEUE_LENGTH}.
+   * A length of zero disables the offline queue. The default value is
+   * {@value RtmClientBuilder#DEFAULT_PENDING_QUEUE_LENGTH}.
    *
-   * @param pendingActionQueueLength length of offline queue
+   * @param pendingActionQueueLength length of the offline queue
    * @return the current builder object
    */
   public RtmClientBuilder setPendingActionQueueLength(int pendingActionQueueLength) {
@@ -279,10 +283,10 @@ public class RtmClientBuilder {
   }
 
   /**
-   * Sets factory for a WebSocket transport implementation.
+   * Sets the WebSocket transport used by the client.
    * <p>
-   * This method allows you to use a different WebSocket implementation. By default, the Satori RTM
-   * SDK uses the {@code nv-websocket-client} WebSocket client implementation.
+   * By default, the RTM SDK uses the {@code nv-websocket-client} WebSocket client implementation.
+   * {@code setTransportFactory} lets you use a different WebSocket implementation.
    *
    * @param transportFactory WebSocket transport factory.
    * @return {@link RtmClientBuilder} instance.
@@ -299,14 +303,13 @@ public class RtmClientBuilder {
   }
 
   /**
-   * Sets factory for a WebSocket transport implementation.
+   * Sets the WebSocket transport factory used by the client.
    * <p>
-   * This method allows you to use a different WebSocket implementation. By default, the Satori RTM
-   * SDK uses the {@code nv-websocket-client} WebSocket client implementation.
+   * By default, the RTM SDK uses the {@code nv-websocket-client} WebSocket client implementation.
+   * {@code setTransportFactory} lets you use a different WebSocket implementation.
    *
    * @param transportFactory WebSocket transport factory.
-   * @return {@link RtmClientBuilder} instance.
-   * @deprecated use {@link RtmClientBuilder#setTransportFactory(AbstractTransportFactory)}
+   * @return the current builder object
    */
   public RtmClientBuilder setTransportFactory(AbstractTransportFactory transportFactory) {
     this.mTransportFactory = transportFactory;
@@ -314,14 +317,14 @@ public class RtmClientBuilder {
   }
 
   /**
-   * Sets a authenticator for the client.
+   * Sets an authenticator for the client.
    * <p>
-   * The RTM SDK authenticate the RTM client automatically immediately after connection to RTM is
+   * The RTM SDK automatically authenticates the RTM client immediately after a connection to RTM is
    * established.
    * <p>
-   * The RTM SDK includes {@link RoleSecretAuthProvider} for role-based authentication. Use
-   * role-based authentication to request specific permissions for the client. All roles and
-   * their channel  permissions are scoped by project in the Dev Portal.
+   * The RTM SDK includes {@link RoleSecretAuthProvider}, which offers role-based authentication. Use
+   * role-based authentication to request specific permissions for the RTM client. To manage roles and
+   * channel permissions, go to your project in the Dev Portal.
    *
    * @param authProvider authentication provider
    * @return the current builder object
@@ -365,9 +368,9 @@ public class RtmClientBuilder {
    * <p>
    * This method is intended for advanced users who want control over client task execution.
    *
-   * @param dispatcher              event dispatcher
-   * @param shouldDispatchTransport if {@code true}, all transport events are executed on dispatcher,
-   *                                otherwise transport events are executed not on dispatcher
+   * @param dispatcher event dispatcher
+   * @param shouldDispatchTransport if {@code true}, the dispatcher executes transport events,
+   *                                otherwise a dispatcher isn't used for transport events
    * @return the current builder object
    */
   public RtmClientBuilder setDispatcher(ExecutorService dispatcher,
@@ -381,7 +384,8 @@ public class RtmClientBuilder {
    * Sets the JSON serializer for the client.
    * <p>
    * The RTM SDK supports two JSON libraries: {@code google-gson} and {@code Jackson2}.
-   * See the <a href="https://github.com/satori-com/satori-rtm-sdk-java#json-library">instruction</a>
+   * See the Java RTM SDK GitHub repository documentation for the
+   * <a href="https://github.com/satori-com/satori-rtm-sdk-java#json-library">JSON Library</a>
    * for more details.
    *
    * @param serializer JSON serializer
@@ -392,7 +396,7 @@ public class RtmClientBuilder {
     return this;
   }
 
-  private URI createUri(String endpoint, String appKey) {
+  URI createUri(String endpoint, String appKey) {
     if (Strings.isNullOrEmpty(endpoint)) {
       throw new IllegalArgumentException();
     }

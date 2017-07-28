@@ -1,8 +1,8 @@
 package com.satori.rtm.model;
 
 /**
- * Represents a Protocol Data Unit (PDU). A PDU is a JSON-encoded message sent in a separate WebSocket Frame.
- * The PDU contains system specific information as well as the user-specified payload.
+ * Represents a Protocol Data Unit (<strong>PDU</strong>). A PDU is a JSON-encoded message sent in a WebSocket Frame.
+ * The PDU contains system-specific information as well as a user-specified payload.
  * <p>
  * In the example below, the user-specified payload is the {@code message} element.
  * <p>
@@ -18,7 +18,7 @@ package com.satori.rtm.model;
  * }}
  * </pre>
  *
- * @param <TBody> User-specified payload.
+ * @param <TBody> type of the user-specified payload
  */
 public class Pdu<TBody> {
   private final String action;
@@ -40,9 +40,9 @@ public class Pdu<TBody> {
   }
 
   /**
-   * Returns the body of the PDU. The body is the {@code message} element in the PDU.
+   * Returns the body of the PDU. The body is the {@code body} element in the PDU.
    *
-   * @return PDU body. Could be null.
+   * @return PDU body, or {@code null} if the PDU doesn't contain a payload.
    */
   public TBody getBody() {
     return body;
@@ -51,7 +51,7 @@ public class Pdu<TBody> {
   /**
    * Returns the action element of the PDU.
    *
-   * @return Action
+   * @return a String containing the action
    */
   public String getAction() {
     return action;
@@ -60,34 +60,32 @@ public class Pdu<TBody> {
   /**
    * Returns the identifier ({@code id}) element of the PDU.
    *
-   * @return Identifier
+   * @return a string containing the id
    */
   public String getId() {
     return id;
   }
 
   /**
-   * Returns {@code true} if the PDU is an unsolicited PDU from the RTM Service
-   * and {@code false} otherwise.
+   * Returns {@code true} if the PDU is an unsolicited PDU from RT and {@code false} otherwise.
    * <p>
-   * An unsolicited PDU does not have an identifier ({@code id}) and is not a response
-   * to a request from the client. It is either a message published to a channel
-   * by another application or an error from the RTM Service.
+   * An unsolicited PDU doesn't have an identifier ({@code id}) and isn't a response
+   * to a request from the client. It either contains a message published to the channel, or it's an error PDU
+   * sent by RTM.
    *
-   * @return Returns {@code true} if the PDU is unsolicited; {@code false} otherwise.
+   * @return returns {@code true} if the PDU is unsolicited, otherwise {@code false}.
    */
   public boolean isUnsolicited() {
     return null == id;
   }
 
   /**
-   * Returns {@code true} if the PDU is a system error from the RTM Service and {@code false}
-   * otherwise. This type of error generally indicates an internal error with the RTM Service.
+   * Returns {@code true} if the PDU is a system error from RTM and {@code false}
+   * otherwise. This type of error usually indicates an internal error within RTM.
    * <p>
-   * In addition, if this type of error is received, the client should disconnect and reconnect
-   * the WebSocket connection and the RTM Service may disconnect.
+   * Respond to this type of error by disconnecting and reconnecting the client.
    *
-   * @return Returns {@code true} if the PDU is a system error; {@code false} otherwise.
+   * @return returns {@code true} if the PDU is a system error, otherwise {@code false}.
    */
   public boolean isSystemError() {
     return action.equals("/error");
@@ -95,10 +93,10 @@ public class Pdu<TBody> {
 
   /**
    * Returns {@code true} if the PDU is a positive response to a request
-   * sent by the application and {@code false} otherwise. The {@code action} element of a positive
-   * response PDU ends with {@code /ok}, for example, {@code 'rtm/publish/ok'}.
+   * sent by the application, and {@code false} otherwise. The {@code action} element of a positive
+   * response PDU ends with the string "/ok", for example, {@code "rtm/publish/ok"}.
    *
-   * @return Returns {@code true} if the PDU is a positive response; {@code false} otherwise.
+   * @return returns {@code true} if the PDU is a positive response, otherwise {@code false}.
    */
   public boolean isOkOutcome() {
     return action.endsWith("/ok");
@@ -106,10 +104,10 @@ public class Pdu<TBody> {
 
   /**
    * Returns {@code true} if the PDU is a negative response to a request
-   * sent by the application and {@code false} otherwise. The {@code action} element of a negative
-   * response PDU ends with {@code /error}, for example, {@code 'rtm/publish/error'}.
+   * sent by the application, and {@code false} otherwise. The {@code action} element of a negative
+   * response PDU ends with the string "/error", for example, {@code "rtm/publish/error"}.
    *
-   * @return Returns {@code true} if the PDU is a positive response; {@code false} otherwise.
+   * @return returns {@code true} if the PDU is a negative response, otherwise {@code false}.
    */
   public boolean isErrorOutcome() {
     return action.endsWith("/error");

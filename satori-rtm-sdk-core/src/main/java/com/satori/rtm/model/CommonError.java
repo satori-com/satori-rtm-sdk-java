@@ -6,10 +6,11 @@ package com.satori.rtm.model;
  * The {@code error} field specifies the unique identifier for the error.
  * <p>
  * The {@code reason} field contains text that describes the error. This field is variable and
- * may change in the future, and should not be parsed. You can use this text, for example,
+ * may change in the future, and shouldn't be parsed. You can use this text, for example,
  * to include in error log files.
  * <p>
- * For more information on error messages from the RTM Service, see the <em>RTM API Reference</em>.
+ * For more information on error messages from RTM, see the section "Error Reference" in the chapter "RTM API" in
+ * <em>Satori Docs</em>.
  *
  * <pre>{@literal
  * {

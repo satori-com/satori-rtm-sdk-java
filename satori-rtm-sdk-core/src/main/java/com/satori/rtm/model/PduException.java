@@ -1,7 +1,7 @@
 package com.satori.rtm.model;
 
 /**
- * Indicates the reply from the RTM Service has unexpected format or the RTM Service returns a negative response.
+ * Indicates the reply from RTM has unexpected format or RTM returns a negative response.
  */
 public class PduException extends Exception {
   private final PduRaw mPdu;

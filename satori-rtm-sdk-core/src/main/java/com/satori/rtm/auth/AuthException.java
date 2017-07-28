@@ -1,7 +1,7 @@
 package com.satori.rtm.auth;
 
 /**
- * Signals that authentication process with the RTM Service failed.
+ * Signals that the authentication process failed
  */
 public class AuthException extends Exception {
   public AuthException(Throwable throwable) {

@@ -127,7 +127,7 @@ class RtmService {
     }
 
     synchronized (mQueueLock) {
-      // make sure that we are not connected before enqueueing
+      // make sure that we aren't connected before enqueueing
       if (!isConnected()) {
         mPendingQueue.add(action);
       } else {
@@ -163,7 +163,7 @@ class RtmService {
       public void run() {
         Connection connection = getConnection();
         if (null == connection) {
-          throw new IllegalStateException("You are not connected to RTM");
+          throw new IllegalStateException("You aren't connected to RTM");
         }
 
         ListenableFuture<Pdu<T>> response;
@@ -206,7 +206,7 @@ class RtmService {
       public void run() {
         Connection connection = getConnection();
         if (null == connection) {
-          throw new IllegalStateException("You are not connected to RTM");
+          throw new IllegalStateException("You aren't connected to RTM");
         }
         connection.sendWithCallback(action, payload, clazz, callback);
       }

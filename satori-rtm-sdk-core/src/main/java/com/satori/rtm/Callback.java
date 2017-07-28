@@ -12,9 +12,12 @@ public interface Callback<V> {
   void onResponse(V result);
 
   /**
-   * Called when an asynchronous call fails to complete normally.
+   * Called when an asynchronous call fails.
+   * <p>
+   * If the asynchronous call throws a {@link Exception}, then the thrown object is passed to this
+   * method.
    *
-   * @param t failure encountered
+   * @param t thrown exception
    */
   void onFailure(Throwable t);
 }

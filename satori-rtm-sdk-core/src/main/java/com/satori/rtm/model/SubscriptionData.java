@@ -6,9 +6,9 @@ import com.google.common.collect.Lists;
 import java.util.List;
 
 /**
- * Represents a message coming from the RTM Service on a subscription_id.
+ * Represents a message coming from RTM on a subscription_id.
  * <p>
- * Use the methods in this class to access the data received from the RTM Service.
+ * Use the methods in this class to access the data received from RTM.
  *
  *
  * <pre>{@literal

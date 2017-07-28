@@ -1,7 +1,7 @@
 package com.satori.rtm.model;
 
 /**
- * Represents the body of a Protocol Data Unit (PDU) for a subscribe request.
+ * Represents the body of a Protocol Data Unit (<strong>PDU</strong>) for a subscribe request.
  * <p>
  * The PDU could have the following basic structures:
  * <pre>{@literal

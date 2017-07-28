@@ -1,5 +1,5 @@
 /**
- * Classes that represent JSON data models and exceptions as Protocol Data Units (PDU).
+ * Classes that represent JSON data models and exceptions as Protocol Data Units (<strong>PDU</strong>).
  * <p>
  * The models specify how the SDK parses and serializes JSON data.
  * <p>

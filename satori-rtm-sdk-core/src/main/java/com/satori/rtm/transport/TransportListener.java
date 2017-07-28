@@ -5,12 +5,12 @@ package com.satori.rtm.transport;
  */
 public interface TransportListener {
   /**
-   * Called after a transport connects to the RTM Service.
+   * Called after a transport connects to RTM.
    */
   void onConnected();
 
   /**
-   * Called after a transport disconnects from the RTM Service.
+   * Called after a transport disconnects from RTM.
    */
   void onDisconnected();
 

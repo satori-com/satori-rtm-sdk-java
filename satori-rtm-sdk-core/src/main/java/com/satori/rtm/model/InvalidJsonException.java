@@ -1,7 +1,7 @@
 package com.satori.rtm.model;
 
 /**
- * Indicates a message with an incorrect or invalid JSON format received from the RTM Service.
+ * Indicates a message with an incorrect or invalid JSON format received from RTM.
  */
 public class InvalidJsonException extends Exception {
   private final String mJson;

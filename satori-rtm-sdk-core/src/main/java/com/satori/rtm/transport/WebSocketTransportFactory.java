@@ -52,8 +52,8 @@ public class WebSocketTransportFactory extends AbstractTransportFactory {
    * @return Neo-Vision WebSocket factory
    * @deprecated If you need to reconfigure underlying WebSocket then use
    * {@link WebSocketTransportFactory#buildUnderlyingWebSocketFactory()}
-   * method at your own risk. SDK doesn't provide any garanties that underlying WebSocket library
-   * will not be changed in the future.
+   * method at your own risk. The RTM SDK may change the underlying WebSocket library
+   * in the future.
    */
   @Deprecated
   public WebSocketFactory getNVWebSocketFactory() {

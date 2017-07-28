@@ -1,7 +1,7 @@
 package com.satori.rtm.model;
 
 /**
- * Represents the body of a Protocol Data Unit (PDU) for a positive reply to a delete request.
+ * Represents the body of a Protocol Data Unit (<strong>PDU</strong>) for a positive reply to a delete request.
  * <p>
  * The PDU has the following basic structure for a positive reply:
  * <pre>{@literal
