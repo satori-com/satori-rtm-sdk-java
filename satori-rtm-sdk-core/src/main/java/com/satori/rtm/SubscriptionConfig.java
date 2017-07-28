@@ -7,12 +7,7 @@ import com.satori.rtm.utils.TryCatchProxy;
 import java.util.EnumSet;
 
 /**
- * Defines the initial settings for a channel subscription. Includes the method used by Java SDK
- * to resubscribe after the WebSocket connection to the RTM Service drops and the SDK reconnects.
- * <p>
- * The Java SDK provides several strategies for resubscribing. See {@link SubscriptionMode}.
- * <p>
- * You can also define your own strategies with this class.
+ * Provides settings that configure a subscription.
  */
 public class SubscriptionConfig {
   final private SubscribeRequest mSubscribeRequest;
@@ -20,11 +15,11 @@ public class SubscriptionConfig {
   final private SubscriptionListener mUserListeners;
 
   /**
-   * Creates a subscription configuration to use in channel subscription requests, with a specific
+   * Creates a subscription configuration to use in the subscription requests, with a specific
    * subscription modes.
    *
-   * @param modes    Subscription modes.
-   * @param listener Subscription listener.
+   * @param modes    subscription modes
+   * @param listener subscription listener
    */
   public SubscriptionConfig(EnumSet<SubscriptionMode> modes, SubscriptionListener listener) {
     // wrap all user's code to try catch proxy
@@ -35,19 +30,19 @@ public class SubscriptionConfig {
   }
 
   /**
-   * Gets the last {@code position} returned by the RTM Service for the channel subscription.
+   * Gets the current subscription {@code position}.
    *
-   * @return Stream position.
+   * @return subscription position
    */
   public String getPosition() {
     return mSubscribeRequest.getPosition();
   }
 
   /**
-   * Sets the {@code position} value to use in subscription requests.
+   * Sets a subscription {@code position} for the subscription request.
    *
-   * @param position Stream position.
-   * @return SubscriptionConfig instance.
+   * @param position subscripttion position
+   * @return SubscriptionConfig instance
    */
   public SubscriptionConfig setPosition(String position) {
     mSubscribeRequest.setPosition(position);
@@ -55,12 +50,13 @@ public class SubscriptionConfig {
   }
 
   /**
-   * Sets the history {@code age} value to use in subscription requests.
+   * Sets the history {@code age} value to use in the subscription request.
    * <p>
-   * To use this method, set history settings for the channel in the Developer Portal.
+   * To use this method, you also have to configure history settings for the channel in the
+   * Developer Portal.
    *
-   * @param age Age value in seconds.
-   * @return SubscriptionConfig instance.
+   * @param age age value in seconds.
+   * @return the current {@code SubscriptionConfig}.
    */
   public SubscriptionConfig setAge(Integer age) {
     if (null == age) {
@@ -78,10 +74,11 @@ public class SubscriptionConfig {
   /**
    * Sets the history {@code count} value to use in subscription requests.
    * <p>
-   * To use this method, set history settings for the channel in the Developer Portal.
+   * To use this method, you also have to configure history settings for the channel in the
+   * Developer Portal.
    *
-   * @param count Count value.
-   * @return SubscriptionConfig instance.
+   * @param count count value
+   * @return the current {@code SubscriptionConfig}.
    */
   public SubscriptionConfig setCount(Integer count) {
     if (null == count) {
@@ -97,13 +94,12 @@ public class SubscriptionConfig {
   }
 
   /**
-   * Sets the {@code filter} value for a channel subscription.
+   * Sets a streamfilter value to use with a filter in a channel subscription.
    * <p>
-   * A filter is a statement created with fSQL that defines the filter query to
-   * run on the messages published to the channel
+   * A streamfilter is an SQL statement that selects and processes messages in the channel.
    *
-   * @param filter Filter value.
-   * @return SubscriptionConfig instance.
+   * @param filter filter string
+   * @return the current {@code SubscriptionConfig}
    */
   public SubscriptionConfig setFilter(String filter) {
     mSubscribeRequest.setFilter(filter);
@@ -111,69 +107,33 @@ public class SubscriptionConfig {
   }
 
   /**
-   * Sets the {@code period} value to use with a filter in a channel subscription.
-   * <p>
-   * The {@code period} value is the period of time, in seconds, that the RTM Service runs the filter on
-   * channel messages before it sends the result to the client application
+   * Sets the period of time, in seconds, that RTM runs the streamfilter on the channel before it
+   * sends the result to the RTM client.
    *
-   * @param period Period value.
-   * @return SubscriptionConfig instance.
+   * @param period time period
+   * @return the current {@code SubscriptionConfig}
    */
   public SubscriptionConfig setPeriod(Integer period) {
     mSubscribeRequest.setPeriod(period);
     return this;
   }
 
-  SubscriptionListener getUserListener() {
-    return mUserListeners;
-  }
-
   /**
-   * Called when a client application receives a new {@code position} value from the RTM Service.
-   * <p>
-   * Channel data messages and RTM Service replies to requests contain a {@code position} value.
+   * Called when a client application receives a subscription error from RTM.
    *
-   * @param position Position value.
-   */
-  void onPosition(String position) {
-    // method updates position from rtm replies
-    // ignore position if it's not needed
-    if (!mSubscriptionModes.contains(SubscriptionMode.TRACK_POSITION)) {
-      return;
-    }
-    mSubscribeRequest.setPosition(position);
-  }
-
-  /**
-   * Called when a client application receives a channel error from the RTM Service.
-   *
-   * @param error Error from RTM Service.
-   * @return {@code true} if the error is not recoverable; {@code false} otherwise.
+   * @param error subscription error
+   * @return {@code true} if the error is not recoverable, otherwise {@code false}
    */
   protected boolean onError(SubscriptionError error) {
     return true;
   }
 
   /**
-   * Called when a client application successfully subscribes to a channel and receives a positive confirmation
-   * from the RTM Service.
-   *
-   * @param position Position value from the RTM Service reply.
-   */
-  void onSuccessSubscribe(String position) {
-    // reset all initial subscription settings
-    mSubscribeRequest.setHistory(null);
-    mSubscribeRequest.setPosition(null);
-    // try to set new position received from subscribe reply
-    onPosition(position);
-  }
-
-  /**
    * Creates a PDU body for a subscription request.
    * <p>
-   * Use this method to create a subscription request when resubscribing to a channel.
+   * Override this method if custom resubscription behaviour is needed.
    *
-   * @param subscriptionId {@code subscription_id} to subscribe to.
+   * @param subscriptionId {@code subscription_id} to subscribe to
    */
   protected SubscribeRequest createSubscribeRequest(String subscriptionId) {
     SubscribeRequest request = new SubscribeRequest();
@@ -188,5 +148,26 @@ public class SubscriptionConfig {
     request.setFilter(mSubscribeRequest.getFilter());
     request.setPeriod(mSubscribeRequest.getPeriod());
     return request;
+  }
+
+  SubscriptionListener getUserListener() {
+    return mUserListeners;
+  }
+
+  void onPosition(String position) {
+    // method updates position from rtm replies
+    // ignore position if it's not needed
+    if (!mSubscriptionModes.contains(SubscriptionMode.TRACK_POSITION)) {
+      return;
+    }
+    mSubscribeRequest.setPosition(position);
+  }
+
+  void onSuccessSubscribe(String position) {
+    // reset all initial subscription settings
+    mSubscribeRequest.setHistory(null);
+    mSubscribeRequest.setPosition(null);
+    // try to set new position received from subscribe reply
+    onPosition(position);
   }
 }

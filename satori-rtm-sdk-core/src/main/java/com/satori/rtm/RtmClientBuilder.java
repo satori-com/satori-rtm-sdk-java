@@ -4,6 +4,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.base.Strings;
 import com.satori.rtm.auth.AuthProvider;
+import com.satori.rtm.auth.RoleSecretAuthProvider;
+import com.satori.rtm.connection.ConnectionListener;
 import com.satori.rtm.connection.Serializer;
 import com.satori.rtm.transport.AbstractTransportFactory;
 import com.satori.rtm.transport.Transport;
@@ -25,41 +27,42 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Builder for an RTM client that publishes or subscribes to a channel and responds to channel events.
+ * A builder class for an {@link RtmClient}.
+ *
+ * <p>The following is an example shows how to use the {@code RtmClientBuilder} to construct a
+ * {@link RtmClient} instance:
+ *
+ * <pre>
+ * RtmClient client = new RtmClientBuilder(YOUR_ENDPOINT, YOUR_APPKEY)
+ *     .setProxy(URI.create("http://127.0.0.1:3128"))
+ *     .setListener(new RtmClientAdapter() {
+ *       &#64;Override
+ *       public void onEnterConnected(RtmClient client) {
+ *         System.out.println("Connected to Satori RTM!");
+ *       }
+ *     })
+ *     .build();
+ * </pre>
  * <p>
- * To use RtmClientBuilder:
- * <ol>
- * <li>
- * Create a new {@code RtmClientBuilder}, passing it the {@code endpoint} and {@code appkey} for your
- * application project.
- * </li>
- * <li>
- * Although RtmClientBuilder has defaults for all RTM client options, you can call methods such as
- * {@link RtmClientBuilder#setAuthProvider(AuthProvider)} or {@link RtmClientBuilder#setConnectionTimeout(int)} to
- * provide your own values. These methods always return the current builder object, so you can
- * chain method calls.
- * </li>
- * <li>
- * Call {@link RtmClientBuilder#build()} to combine all the settings and return the RTM client.
- * </li>
- * </ol>
- * <p>
- * To learn more, see the following chapters on the Satori Docs website:
+ * NOTES:
  * <ul>
- * <li>Using Satori &gt; Publishing</li>
- * <li>Using Satori &gt; Subscribing</li>
- * <li>RTM SDKs</li>
+ * <li> the order of invocation of configuration methods does not matter</li>
+ * <li> {@code YOUR_ENDPOINT} and {@code YOUR_APPKEY} are the values from your Satori project in
+ * the Dev Portal</li>
  * </ul>
  */
 public class RtmClientBuilder {
   private static final Logger LOG = LoggerFactory.getLogger(RtmClientBuilder.class);
   private static final int DEFAULT_PENDING_QUEUE_LENGTH = (1 << 10);
   private static final int DEFAULT_CONNECTION_TIMEOUT = 60000;
+  private static final int DEFAULT_MIN_RECONNECT_INTERVAL = 1000;
+  private static final int DEFAULT_MAX_RECONNECT_INTERVAL = 120000;
   private static final String RTM_VER = "v2";
+
   private final String mEndpoint;
   private final String mAppKey;
-  long mMinReconnectInterval = 1000;
-  long mMaxReconnectInterval = 120000;
+  long mMinReconnectInterval = DEFAULT_MIN_RECONNECT_INTERVAL;
+  long mMaxReconnectInterval = DEFAULT_MAX_RECONNECT_INTERVAL;
   int mPendingActionQueueLength = DEFAULT_PENDING_QUEUE_LENGTH;
   ScheduledExecutorService mScheduledExecutorService;
   RtmClientListener mUserListener = new RtmClientAdapter() {};
@@ -73,15 +76,17 @@ public class RtmClientBuilder {
   private URI mProxyUri;
 
   /**
-   * Constructs a new client builder and sets its endpoint and appkey.
+   * Constructs a new client builder with the endpoint and the appkey.
    * <p>
-   * If necessary, call {@code RtmClientBuilder} methods to set properties,
-   * then call {@code RtmClientBuilder#build} to return the client.
+   * {@code RtmClientBuilder} instance is used to build {@link RtmClient} with various configuration
+   * settings. {@code RtmClientBuilder} follows the builder pattern, and it is typically used by
+   * first invoking various configuration methods to set desired options, and finally calling
+   * {@link #build()}.
    * <p>
-   * To obtain an {@code endpoint} and {@code appKey}, log in to the Satori Dev Portal and create a new project.
+   * {@code endpoint} and {@code appKey} are the values from your Satori project in the Dev Portal.
    *
-   * @param endpoint Satori RTM endpoint for the channels defined for your project
-   * @param appKey   unique identifier for the apps defined for your project
+   * @param endpoint endpoint from Satori RTM Project
+   * @param appKey appkey from Satori RTM Project
    */
   public RtmClientBuilder(String endpoint, String appKey) {
     if (Strings.isNullOrEmpty(endpoint)) {
@@ -148,17 +153,7 @@ public class RtmClientBuilder {
   }
 
   /**
-   * Combines all of the settings in the client builder and returns the RTM client.
-   * <p>
-   * Settings come from
-   * <ul>
-   * <li>
-   * {@code RtmClientBuilder} defaults
-   * </li>
-   * <li>
-   * Settings you make with {@code RtmClientBuilder} methods
-   * </li>
-   * </ul>
+   * Builds a {@link RtmClient} with the configure properties.
    * <p>
    * Call this method <strong>after</strong> you've set your custom client properties.
    *
@@ -185,10 +180,9 @@ public class RtmClientBuilder {
    * Sets a socket connection timeout.
    * <p>
    * If the client fails to connect to the RTM with the specified timeout, the RTM SDK passes an
-   * exception to the {@link com.satori.rtm.connection.ConnectionListener#onConnectingError}
-   * callback.
+   * exception to the {@link ConnectionListener#onConnectingError} callback.
    * <p>
-   * The default interval is {@link com.satori.rtm.RtmClientBuilder#DEFAULT_CONNECTION_TIMEOUT}, in
+   * The default interval is {@value #DEFAULT_CONNECTION_TIMEOUT}, in
    * milliseconds. Zero timeout is interpreted as an infinite timeout.
    *
    * @param connectionTimeout interval, in milliseconds, to wait for a connection
@@ -201,20 +195,12 @@ public class RtmClientBuilder {
   }
 
   /**
-   * Set the proxy server by a URI.
+   * Sets a proxy server for the RTM client.
    * <p>
-   * If the URI contains the scheme part and its value is
-   * {@code "https"} (case-insensitive) then TLS is enabled in the communication with
-   * the proxy server.
+   * If the URI contains a {@code scheme} part and its value is
+   * {@code "https"} (case-insensitive) then TLS is enabled.
    * <p>
-   * If the URI contains the userinfo part then userinfo is used for authentication at the
-   * proxy server.
-   * <p>
-   * For example:
-   * <pre>{@code RtmClient client = new RtmClientBuilder(YOUR_ENDPOINT, YOUR_APPKEY)
-   * .setProxy(URI.create("http://127.0.0.1:3128"))
-   * .build();
-   * }</pre>
+   * If the URI contains a {@code userinfo} part then it's used for authentication.
    *
    * @param proxyUri proxy server identifier
    * @return the current builder object
@@ -243,15 +229,16 @@ public class RtmClientBuilder {
   /**
    * Sets the maximum time to wait between reconnection attempts.
    * <p>
-   * The RTM SDK uses the following formula to calculate the interval between reconnection attempts:
+   * The Satori RTM SDK uses the following formula to calculate the interval between reconnection
+   * attempts:
    * <p>
-   * {@code min(minReconnectInterval * (2 ^ (attempt_number), maxReconnectInterval)}
+   * {@code min(maxReconnectInterval, jitter + minReconnectInterval * (2 ^ (attemptNumber))}
    * <p>
    * This value steadily increases between attempts until it reaches the maximum time.
    * <p>
    * The waiting period applies whenever the client reconnects, regardless of why it disconnected.
    *
-   * @param maxReconnectInterval maximum waiting time, in milliseconds. The default is 120,000 milliseconds (2 minutes)
+   * @param maxReconnectInterval maximum waiting time, in milliseconds. The default is {@value #DEFAULT_MAX_RECONNECT_INTERVAL}
    * @return the current builder object
    */
   public RtmClientBuilder setMaxReconnectInterval(long maxReconnectInterval) {
@@ -262,15 +249,16 @@ public class RtmClientBuilder {
   /**
    * Sets the minimum time to wait between reconnection attempts.
    * <p>
-   * The RTM SDK uses the following formula to calculate the interval between reconnection attempts:
+   * The Satori RTM SDK uses the following formula to calculate the interval between reconnection
+   * attempts:
    * <p>
-   * {@code min(minReconnectInterval * (2 ^ (attempt_number), maxReconnectInterval)}
+   * {@code min(maxReconnectInterval, jitter + minReconnectInterval * (2 ^ (attemptNumber))}
    * <p>
    * This value steadily increases between attempts until it reaches the maximum time.
    * <p>
    * The waiting period applies whenever the client reconnects, regardless of why it disconnected.
    *
-   * @param minReconnectInterval minimum waiting period, in milliseconds. The default is 1,000 milliseconds (1 second)
+   * @param minReconnectInterval minimum waiting period, in milliseconds. The default is {@value #DEFAULT_MIN_RECONNECT_INTERVAL}
    * @return the current builder object
    */
   public RtmClientBuilder setMinReconnectInterval(long minReconnectInterval) {
@@ -279,11 +267,8 @@ public class RtmClientBuilder {
   }
 
   /**
-   * Sets an client listener that has callback methods to handle client state changes, connection events,
-   * and error conditions.
-   * <p>
-   * For example, the listener has a callback that's invoked when the client successfully connects to RTM. Another
-   * callback is invoked if a connection error occurs.
+   * Sets an client listener that has callback methods to handle client state changes, connection
+   * events and error conditions.
    *
    * @param listener event listener
    * @return the current builder object
@@ -294,14 +279,13 @@ public class RtmClientBuilder {
   }
 
   /**
-   * Sets factory for a WebSocket transport.
+   * Sets factory for a WebSocket transport implementation.
    * <p>
-   * This method allows you to use a different WebSocket implementation. By default, the Java SDK
-   * uses the {@code nv-websocket-client} WebSocket client implementation.
+   * This method allows you to use a different WebSocket implementation. By default, the Satori RTM
+   * SDK uses the {@code nv-websocket-client} WebSocket client implementation.
    *
    * @param transportFactory WebSocket transport factory.
    * @return {@link RtmClientBuilder} instance.
-   * @see WebSocketTransportFactory
    * @deprecated use {@link RtmClientBuilder#setTransportFactory(AbstractTransportFactory)}
    */
   @Deprecated
@@ -315,14 +299,13 @@ public class RtmClientBuilder {
   }
 
   /**
-   * Sets factory for a WebSocket transport.
+   * Sets factory for a WebSocket transport implementation.
    * <p>
-   * This method allows you to use a different WebSocket implementation. By default, the Java SDK
-   * uses the {@code nv-websocket-client} WebSocket client implementation.
+   * This method allows you to use a different WebSocket implementation. By default, the Satori RTM
+   * SDK uses the {@code nv-websocket-client} WebSocket client implementation.
    *
    * @param transportFactory WebSocket transport factory.
    * @return {@link RtmClientBuilder} instance.
-   * @see WebSocketTransportFactory
    * @deprecated use {@link RtmClientBuilder#setTransportFactory(AbstractTransportFactory)}
    */
   public RtmClientBuilder setTransportFactory(AbstractTransportFactory transportFactory) {
@@ -331,13 +314,14 @@ public class RtmClientBuilder {
   }
 
   /**
-   * Sets the authenticator for the client.
+   * Sets a authenticator for the client.
    * <p>
-   * Use an authenticator if you want to authenticate users automatically before letting them use the client.
+   * The RTM SDK authenticate the RTM client automatically immediately after connection to RTM is
+   * established.
    * <p>
-   * By default, the client doesn't use authentication. The RTM SDK includes
-   * {@link com.satori.rtm.auth.RoleSecretAuthProvider}, which uses a role secret key you get from the Satori Dev
-   * Portal.
+   * The RTM SDK includes {@link RoleSecretAuthProvider} for role-based authentication. Use
+   * role-based authentication to request specific permissions for the client. All roles and
+   * their channel  permissions are scoped by project in the Dev Portal.
    *
    * @param authProvider authentication provider
    * @return the current builder object
@@ -351,7 +335,6 @@ public class RtmClientBuilder {
    * Sets the automatic reconnection flag for the client.
    * <p>
    * By default, the client automatically tries to reconnect to RTM if the connection fails.
-   * <p>
    *
    * @param isAutoReconnect set to {@code true} to enable automatic reconnect, or {@code false} to disable it
    * @return the current builder object
@@ -362,8 +345,8 @@ public class RtmClientBuilder {
   }
 
   /**
-   * Sets a scheduler to run delayed or periodic tasks. If not specified, the RTM SDK uses a single-threaded
-   * executor service.
+   * Sets a scheduler to run delayed or periodic tasks. If not specified, the RTM SDK uses a
+   * single-threaded executor service.
    * <p>
    * This method is intended for advanced users who want control over client task execution.
    *
@@ -376,8 +359,9 @@ public class RtmClientBuilder {
   }
 
   /**
-   * Sets an event dispatcher that executes user actions and transport events. If not specified, the RTM SDK
-   * provides a dispatcher that executes events sequentially in first-in first-out order.
+   * Sets an event dispatcher that executes user actions and transport events. If not specified,
+   * the RTM SDK provides a dispatcher that executes events sequentially in first-in first-out
+   * order.
    * <p>
    * This method is intended for advanced users who want control over client task execution.
    *
@@ -408,7 +392,7 @@ public class RtmClientBuilder {
     return this;
   }
 
-  protected URI createUri(String endpoint, String appKey) {
+  private URI createUri(String endpoint, String appKey) {
     if (Strings.isNullOrEmpty(endpoint)) {
       throw new IllegalArgumentException();
     }

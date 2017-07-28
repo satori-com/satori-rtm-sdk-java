@@ -1,89 +1,87 @@
 package com.satori.rtm;
 
-import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.satori.rtm.connection.Connection;
 import com.satori.rtm.model.DeleteReply;
 import com.satori.rtm.model.Pdu;
 import com.satori.rtm.model.PduException;
 import com.satori.rtm.model.PublishReply;
-import com.satori.rtm.model.PublishRequest;
 import com.satori.rtm.model.ReadReply;
 import com.satori.rtm.model.ReadRequest;
 import com.satori.rtm.model.SearchReply;
-import com.satori.rtm.model.SubscribeRequest;
-import com.satori.rtm.model.UnsubscribeReply;
-import com.satori.rtm.model.UnsubscribeRequest;
 import com.satori.rtm.model.WriteReply;
 import com.satori.rtm.model.WriteRequest;
-import com.satori.rtm.model.DeleteRequest;
 import com.satori.rtm.transport.TransportException;
 import java.util.EnumSet;
 
 /**
- * The RtmClient interface is the main entry point for accessing the RTM Service, including publish and subscribe
- * operations.
+ * The RtmClient interface is the main entry point for accessing the RTM Service. RtmClient
+ * instances are thread-safe so you can reuse them freely across multiple threads.
  * <p>
- * Create an instance of the client with {@link RtmClientBuilder#RtmClientBuilder} and use the RtmClient methods to start, stop,
- * and restart the client WebSocket connection, and publish and subscribe to channels.
- * <pre>
- * {@code
- * RtmClient client = new RtmClientBuilder(ENDPOINT, APP_KEY)
- *           .setListener(new RtmClientAdapter() {
- *                // overridden methods go here
- *            )}
- *           .build();
- *            //  other logic
+ * RtmClient instance is built with {@link RtmClientBuilder}. RtmClient must be started
+ * explicitly with {@link #start()} method to establish connection to RTM.
+ * <p>
+ * By default, the SDK attempts to reconnect to the RTM Service if the connection to RTM Service
+ * fails for any reason. To disable this use {@link RtmClientBuilder#setAutoReconnect(boolean)}
+ * method.
+ * <p>
+ * Any operation performed when client is in offline is queued and performed
+ * when client reconnects to RTM. To disable this behaviour or change the length of this queue use
+ * {@link RtmClientBuilder#setPendingActionQueueLength(int)} method.
  *
+ * <p>Here is an example of how RtmClient is used to subscribe for a channel:
+ *
+ * <pre>
+ * RtmClient client = new RtmClientBuilder(YOUR_ENDPOINT, YOUR_APPKEY)
+ *   .setListener(new RtmClientAdapter() {
+ *     &#64;Override
+ *     public void onEnterConnected(RtmClient client) {
+ *       System.out.println("Connected to Satori RTM!");
+ *     }
+ *   })
+ *   .build();
+ * client.createSubscription("my_channel", SubscriptionMode.SIMPLE, new SubscriptionAdapter() {
+ *   &#64;Override
+ *   public void onSubscriptionData(SubscriptionData data) {
+ *     for (AnyJson json: data.getMessages()) {
+ *       System.out.println("Got message: " + json);
+ *     }
+ *   }
+ * });
  * client.start();
- * client.createSubscription("test-channel", SubscriptionMode.SIMPLE,
- *     new SubscriptionAdapter() {
- *      // overridden methods go here
- *     });
- * client.publish("test-channel", "Hello, world");
- * }
  * </pre>
  */
 public interface RtmClient {
   /**
-   * Starts the client. Client tries to establish the WebSocket connection to the RTM Service asynchronously.
+   * Starts the client, which then tries to connect to RTM asynchronously.
    * <p>
-   * If you enable auto-reconnect mode, the SDK attempts to reconnect to the RTM Service if the
-   * WebSocket connection fails for any reason.
+   * By default, the SDK attempts to reconnect to the RTM Service if the connection to RTM Service
+   * fails for any reason.
    * <p>
-   * If you make any publish or subscribe requests while the WebSocket connection is not active, the SDK queues the
-   * requests and completes them when the connection is established or re-established.
-   * <p>
-   * You can use the {@link RtmClientListener} interface to define application functionality for when the application
-   * enters or leaves the connecting state.
+   * To provide callbacks that respond to the events in the RtmClient or the connection lifestyle,
+   * use {@link RtmClientBuilder#setListener(RtmClientListener)} method.
    *
    * @see RtmClientListener#onEnterConnecting(RtmClient)
    */
   void start();
 
   /**
-   * Stops the client. The SDK tries to close the WebSocket connection asynchronously and does not start it again
-   * unless you call {@link RtmClient#start()}.
+   * Stops the client. The RTM SDK tries to close the WebSocket connection asynchronously and does
+   * not start it again unless you call {@link RtmClient#start()}.
    * <p>
-   * Use this method to explicitly stop all interaction with the RTM Service.
-   * <p>
-   * You can use the {@link RtmClientListener} interface to define application functionality when the application
-   * enters or leaves the {@code stopped} state.
+   * Use this method to explicitly stop all interaction with RTM.
    *
    * @see RtmClientListener#onEnterStopped(RtmClient)
    */
   void stop();
 
   /**
-   * Restarts the client.
-   *
-   * @see RtmClient#start()
-   * @see RtmClient#stop()
+   * Restarts the client by calling {@link RtmClient#stop} followed by {@link RtmClient#start}.
    */
   void restart();
 
   /**
-   * Shuts down the client. Stops the client, terminates threads, and cleans up all allocated resources.
+   * Stops the client, terminates threads, and cleans up all allocated resources.
    * <p>
    * You cannot use the instance of the {@link RtmClient} when it is shut down.
    */
@@ -92,93 +90,76 @@ public interface RtmClient {
   /**
    * Returns {@code true} if the client is completely connected.
    * <p>
-   * The client is connected when underlying WebSocket transport is established, any authentication (if necessary) is
-   * completed and the client is in an active state and able to send and receive messages.
+   * The client is connected when:
+   * <ul>
+   * <li>Connection to RTM is established</li>
+   * <li>Authentication (if requested) is complete</li>
+   * </ul>
    *
-   * @return {@code true} if the client is completely connected; {@code false} otherwise.
+   * @return {@code true} if the client is completely connected, otherwise {@code false}
    */
   boolean isConnected();
 
   /**
-   * Creates subscription with the specific channel.
+   * Creates a subscription to the specified channel.
    * <p>
-   * You can create subscription at any time. The SDK manages the subscription and sends a subscribe
-   * request when the WebSocket connection is established. Use the {@code subscriptionConfig} parameter to define
-   * the behaviour that the SDK uses to handle dropped connections.
-   * <p>
-   * Subscribe and unsubscribe operations always produce either an OK response or an error response from the RTM
-   * Service.
+   * You can subscribe at any time. The RTM SDK manages the subscription and sends a subscribe
+   * request when the RtmClient is connected. Use {@code modes} to tell the SDK how to resubscribe
+   * after a dropped connection.
    *
-   * @param channel  Name of the channel.
-   * @param modes    Subscription modes.
-   * @param listener Subscription listener.
-   * @see SubscribeRequest
+   * @param channel  name of the channel
+   * @param modes    subscription modes
+   * @param listener subscription listener
+   * @see SubscriptionAdapter
    */
   void createSubscription(String channel, EnumSet<SubscriptionMode> modes,
                           SubscriptionListener listener);
 
   /**
-   * Creates subscription to the specified subscription id.
+   * Creates a subscription to the specified subscription id.
    * <p>
-   * You can create subscription at any time. The SDK manages the subscription and sends a subscribe
-   * request when the WebSocket connection is established. Use the {@code subscriptionConfig} parameter to define
-   * the behaviour that the SDK uses to handle dropped connections.
+   * You can subscribe at any time. The RTM SDK manages the subscription and sends a subscribe
+   * request when the RtmClient is connected. Use the {@code subscriptionConfig} parameter to set
+   * various subscription options such as filter, history, position etc.
    * <p>
-   * Subscribe and unsubscribe operations always produce either an OK response or an error response from the RTM
-   * Service.
-   * <p>
-   * If filter is not specified then {@code channelOrSubId} is used as a channel name.
+   * If filter is not specified then subscription id is used as a channel name.
    *
-   * @param channelOrSubId     Name of the channel or subscription id.
-   * @param subscriptionConfig Subscription configuration.
-   * @see SubscribeRequest
+   * @param channelOrSubId     name of the channel or subscription id
+   * @param subscriptionConfig subscription configuration
    */
   void createSubscription(String channelOrSubId, SubscriptionConfig subscriptionConfig);
 
   /**
    * Removes the subscription with the specific subscription id.
    * <p>
-   * The RTM Service continues to send messages for the channel until the unsubscribe operation completes.
-   * <p>
-   * You can use the {@link SubscriptionListener} interface to define application
-   * functionality for when the application enters or leaves the {@code unsubscribing}, {@code unsubscribed}, or
-   * {@code deleted} state.
+   * Use the callback methods in {@link SubscriptionListener} to respond to the events in the
+   * subscription lifecycle.
    *
-   * @param subscriptionId Name of the channel to unsubscribe from.
-   * @see SubscriptionListener#onEnterUnsubscribing(UnsubscribeRequest)
-   * @see SubscriptionListener#onEnterUnsubscribed(UnsubscribeRequest, UnsubscribeReply)
-   * @see SubscriptionListener#onDeleted()
+   * @param subscriptionId subscription id
    */
   void removeSubscription(String subscriptionId);
 
   /**
-   * Publishes the message to the channel.
+   * Publishes a message to a channel asynchronously.
    * <p>
-   * If client is not connected to the RTM Service, the publish request is queued. The SDK sends the message when the
-   * connection is established. The length of this queue is limited by
-   * {@link RtmClientBuilder#setPendingActionQueueLength(int)}.
+   * To get the response returned by RTM, call {@link ListenableFuture#get}, or pass
+   * {@code ListenableFuture} to {@link com.google.common.util.concurrent.Futures#addCallback} to
+   * set up a callback.
    * <p>
-   * Use the ListenableFuture object, for example, with the {@link java.util.concurrent.Future#get}
-   * method or use the {@link com.google.common.util.concurrent.Futures#addCallback(ListenableFuture, FutureCallback)}
-   * method to set a callback and process the response from the RTM Service.
-   * <p>
-   * The {@code ListenableFuture} can fail due to one of the following errors during the publish operation:
+   * {@link ListenableFuture} can complete with the following execution exceptions:
    * <ul>
-   * <li>{@link IllegalStateException}: The message cannot be added to the pending queue because the queue is
-   * full.</li>
-   * <li>{@link PduException}: The reply from the RTM Service is not a positive confirmation.</li>
-   * <li>{@link TransportException}: An error occurred in the WebSocket transport
-   * layer.</li>
+   * <li>{@link IllegalStateException}: RTM SDK fails to add the message to the pending queue
+   * because the queue is full.</li>
+   * <li>{@link PduException}: an RTM error occurs. For example, this exception is thrown if the
+   * client is not authorized to publish to the specified channel.</li>
+   * <li>{@link TransportException}: a WebSocket transport error occurred.</li>
    * </ul>
    *
-   * @param channel Name of the channel to publish to.
-   * @param message Serializable JSON value.
-   * @param ack     Acknowledge mode.
-   * @param <T>     Type of serializable message.
-   * @return Asynchronous result of the publish request.
-   * @see PublishRequest
-   * @see PublishReply
-   * @see RtmClientBuilder#setPendingActionQueueLength(int)
+   * @param channel name of the channel
+   * @param message message to publish
+   * @param ack     determines if RTM should acknowledge the publish operation
+   * @param <T>     type of the {@code message} parameter
+   * @return result of the publish operation, returned asynchronously
    */
   <T> ListenableFuture<Pdu<PublishReply>> publish(String channel, T message, Ack ack);
 
@@ -190,111 +171,75 @@ public interface RtmClient {
   Connection getConnection();
 
   /**
-   * Reads the value of the specified key from a key-value store.
+   * Reads the value of the specified key from a key-value store asynchronously.
+   * <p>
+   * The return value described in the {@link #publish(String, Object, Ack)} method.
    *
-   * @param key Key name.
-   * @return Asynchronous result of the read request.
-   * @see #read(ReadRequest)
+   * @param key key name
+   * @return result of the read operation, returned asynchronously
+   * @see #publish(String, Object, Ack)
    */
   ListenableFuture<Pdu<ReadReply>> read(String key);
 
   /**
-   * Reads the value of the key specified in a {@link ReadRequest} instance from a key-value store.
+   * Reads the value from a key-value store asynchronously.
    * <p>
-   * If client is not connected to the RTM Service, the read request is queued. The SDK reads the message when the
-   * connection is established. The length of this queue is limited by
-   * {@link RtmClientBuilder#setPendingActionQueueLength(int)}.
-   * <p>
-   * The <a href="http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/util/concurrent/ListenableFuture.html">ListenableFuture</a>
-   * returned by this method is complete when the SDK receives the value from the RTM Service.
-   * <p>
-   * The {@code ListenableFuture} can fail due to one of the following errors during the read operation:
-   * <ul>
-   * <li>{@link IllegalStateException}: The request cannot be added to the pending queue because the queue is
-   * full.</li>
-   * <li>{@link PduException}: The reply from the RTM Service is not a positive confirmation.</li>
-   * <li>{@link TransportException}: An error occurred in the WebSocket transport
-   * layer.</li>
-   * </ul>
+   * The return value described in the {@link #publish(String, Object, Ack)} method.
    *
-   * @param request The read request.
-   * @return Asynchronous result of the read request.
+   * @param request read request
+   * @return asynchronous result of the read request
    */
   ListenableFuture<Pdu<ReadReply>> read(ReadRequest request);
 
   /**
-   * Writes the value for the specified key to a key-value store.
+   * Writes the specified key-value pair to the key-value store asynchronously.
+   * <p>
+   * The return value described in the {@link #publish(String, Object, Ack)} method.
    *
-   * @param key   Key name.
-   * @param value Serializable JSON value.
-   * @param ack   Acknowledge mode.
-   * @param <T>   Type of serializable message.
-   * @return Asynchronous result of the write request.
+   * @param key   key name
+   * @param value value to store
+   * @param ack   determines if RTM should acknowledge the write operation
+   * @param <T>   type of serializable message
+   * @return asynchronous result of the write request
    * @see #write(WriteRequest, Ack)
    */
   <T> ListenableFuture<Pdu<WriteReply>> write(String key, T value, Ack ack);
 
   /**
-   * Writes the value of the key in a {@link WriteRequest} instance to a key-value store.
+   * Writes the value to a key-value store asynchronously.
    * <p>
-   * If client is not connected to the RTM Service, the write request is queued. The SDK sends the request when the
-   * connection is established. The length of this queue is limited by {@link RtmClientBuilder#setPendingActionQueueLength(int)}.
-   * <p>
-   * The <a href="http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/util/concurrent/ListenableFuture.html">ListenableFuture</a>
-   * returned by this method is complete when the SDK receives the acknowledgement from the RTM Service.
-   * <p>
-   * The {@code ListenableFuture} can fail due to one of the following errors during the write operation:
-   * <ul>
-   * <li>{@link IllegalStateException}: The request cannot be added to the pending queue because the queue is
-   * full.</li>
-   * <li>{@link PduException}: The reply from the RTM Service is not a positive confirmation.</li>
-   * <li>{@link TransportException}: An error occurred in the WebSocket transport
-   * layer.</li>
-   * </ul>
+   * The return value described in the {@link #publish(String, Object, Ack)} method.
    *
-   * @param writeRequest Write request.
-   * @param ack          Acknowledge mode.
-   * @param <T>          Type of serializable message.
-   * @return Asynchronous result of the write request.
-   * @see WriteRequest
-   * @see WriteReply
+   * @param writeRequest write request
+   * @param ack          determines if RTM should acknowledge the write operation
+   * @param <T>          type of serializable message
+   * @return asynchronous result of the write request
    */
   <T> ListenableFuture<Pdu<WriteReply>> write(WriteRequest<T> writeRequest, Ack ack);
 
 
   /**
-   * Deletes the value of the specified key from a key-value store.
+   * Deletes the value of the specified key from the key-value store asynchronously.
    * <p>
-   * If client is not connected to the RTM Service, the delete request is queued. The SDK sends the request when the
-   * connection is established. The length of this queue is limited by {@link RtmClientBuilder#setPendingActionQueueLength(int)}.
-   * <p>
-   * The <a href="http://docs.guava-libraries.googlecode.com/git/javadoc/com/google/common/util/concurrent/ListenableFuture.html">ListenableFuture</a>
-   * returned by this method is complete when the SDK receives the acknowledgement from the RTM Service.
-   * <p>
-   * The {@code ListenableFuture} can fail due to one of the following errors during the delete operation:
-   * <ul>
-   * <li>{@link IllegalStateException}: The request cannot be added to the pending queue because the queue is
-   * full.</li>
-   * <li>{@link PduException}: The reply from the RTM Service is not a positive confirmation.</li>
-   * <li>{@link TransportException}: An error occurred in the WebSocket transport
-   * layer.</li>
-   * </ul>
+   * The return value described in the {@link #publish(String, Object, Ack)} method.
    *
-   * @param key Key name.
-   * @param ack Acknowledge mode.
-   * @return Asynchronous result of the write request.
-   * @see DeleteRequest
-   * @see DeleteReply
+   * @param key key name
+   * @param ack determines if RTM should acknowledge the delete operation
+   * @return asynchronous result of the delete request
    */
   ListenableFuture<Pdu<DeleteReply>> delete(String key, Ack ack);
 
 
   /**
-   * Returns all channels with a given prefix. Server could send several responses.
+   * Returns all channels that have a name that starts with {@code prefix} asynchronously.
+   * <p>
+   * This method passes RTM replies to the callback. RTM may send multiple
+   * responses to the same search request: zero or more search result PDUs with
+   * an action of `rtm/search/data` (depending on the results of the search). After the search
+   * result PDUs, RTM follows with PDU with an action of `rtm/search/ok`.
    *
-   * @param prefix   The channels prefix.
-   * @param callback A user-supplied callback to execute when the response has been received
-   *                 from the RTM service.
+   * @param prefix   channels prefix.
+   * @param callback callback that's invoked when the SDK receives a response from RTM
    */
   void search(String prefix, Callback<Pdu<SearchReply>> callback);
 }
