@@ -39,8 +39,6 @@ package com.satori.rtm.model;
  * }}
  * </pre>
  * <p>
- * If you persist messages for a channel in the Developer Portal, you may be able
- * to receive historical messages when you subscribe to a channel. See {@link SubscribeRequest.History}.
  */
 public class SubscribeRequest {
   private String channel;

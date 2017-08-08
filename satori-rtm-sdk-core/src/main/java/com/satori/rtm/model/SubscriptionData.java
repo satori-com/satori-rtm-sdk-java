@@ -6,11 +6,13 @@ import com.google.common.collect.Lists;
 import java.util.List;
 
 /**
- * Represents a message coming from RTM on a subscription_id.
+ * Represents a message coming from RTM.
  * <p>
- * Use the methods in this class to access the data received from RTM.
- *
- *
+ * A Subscription Data PDU delivers channel messages (possibly filtered and transformed messages in
+ * case of a viewed subscription). A single Subscription Data PDU can contain multiple messages
+ * grouped in the array messages field.
+ * <p>
+ * The PDU has the following structure:
  * <pre>{@literal
  * {
  *     "action": "rtm/subscription/data",

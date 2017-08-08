@@ -1,10 +1,10 @@
 package com.satori.rtm.model;
 
 /**
- * Represents a Protocol Data Unit (<strong>PDU</strong>). A PDU is a JSON-encoded message sent in a WebSocket Frame.
- * The PDU contains system-specific information as well as a user-specified payload.
+ * Represents a Protocol Data Unit (<strong>PDU</strong>).
  * <p>
- * In the example below, the user-specified payload is the {@code message} element.
+ * A PDU is a JSON-formatted unit with a specific structure enabling meaningful communication
+ * between RTM and clients. Each PDU is encoded into a single WebSocket frame.
  * <p>
  * <strong>Sample PDU Specification</strong>
  * <pre>{@literal

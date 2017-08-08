@@ -6,8 +6,6 @@ package com.satori.rtm.model;
  * This class stores general PDU structure without knowledge about the payload type.
  * The payload is stored as raw JSON and converted to specific class type on demand.
  * <p>
- * Note that a PDU payload is the same as the {@code message} element in the PDU specification:
- * <p>
  * <strong>Sample PDU Specification</strong>
  * <pre>{@literal
  * {
@@ -19,9 +17,6 @@ package com.satori.rtm.model;
  *    "id": <PDU id> | "<PDU id>"
  * }}
  * </pre>
- * <p>
- * This class is also provided in order to make future extensions to PDU functionality without
- * affecting existing implementations.
  */
 public class PduRaw extends Pdu<AnyJson> {
   public PduRaw() { }

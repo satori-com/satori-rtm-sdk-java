@@ -3,9 +3,6 @@ package com.satori.rtm.model;
 /**
  * Represents the body of a read reply Protocol Data Unit (<strong>PDU</strong>).
  * <p>
- * To learn more about using {@code ReadReply}, see the section "Subscribing and receiving messages" in the
- * <em>Satori Docs</em> chapter "Java SDK Quickstart".
- * <p>
  * The PDU has the following basic structure for a positive response:
  * <pre>{@literal
  * {

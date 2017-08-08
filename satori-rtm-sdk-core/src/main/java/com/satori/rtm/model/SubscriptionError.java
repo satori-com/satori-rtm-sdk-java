@@ -3,26 +3,16 @@ package com.satori.rtm.model;
 /**
  * Represents the body of a Protocol Data Unit (PDU) for a subscription-specific error.
  * <p>
- * The {@code subscription_id} field specifies the subscription_id with the error and the {@code error}
- * field specifies the unique identifier for the error.
+ * A Subscription Error PDU notifies of subscription termination (forceful unsubscription) due to a
+ * subscription-related error.
  * <p>
- * The {@code error_text}
- * field contains text that describes the error. This field is variable and
- * may change in the future, and shouldn't be parsed. You can use this text, for example,
- * to include in error log files.
- * <p>
- * The following are specific {@code SubscriptionError} errors:
- * <ul>
- * <li>{@code out_of_sync} error as an unsolicited error</li>
- * </ul>
- * <p>
- * For more information on error messages from RTM, see the <em>RTM API Reference</em>.
- *
+ * The PDU has the following structure:
  * <pre>{@literal
  * {
  *    "subscription_id": string(),
  *    "error": string(),
- *    "error_text": text(),
+ *    "reason": text(),
+ *    "position": string(),
  *    "missed_message_count": count()
  * }}
  * </pre>
