@@ -1,21 +1,10 @@
 package com.satori.rtm.model;
 
 /**
- * Represents the body of a Protocol Data Unit (PDU) for a subscription-specific error.
+ * Represents the body value of a PDU for a subscription error.
  * <p>
- * A Subscription Error PDU notifies of subscription termination (forceful unsubscription) due to a
- * subscription-related error.
- * <p>
- * The PDU has the following structure:
- * <pre>{@literal
- * {
- *    "subscription_id": string(),
- *    "error": string(),
- *    "reason": text(),
- *    "position": string(),
- *    "missed_message_count": count()
- * }}
- * </pre>
+ * A subscription error PDU notifies you that RTM has terminated your subscription (a forced
+ * unsubscription) because of a subscription-related error.
  */
 public class SubscriptionError extends CommonError {
   private String subscription_id;

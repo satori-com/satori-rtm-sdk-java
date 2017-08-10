@@ -1,22 +1,10 @@
 package com.satori.rtm.model;
 
 /**
- * A Protocol Data Unit (PDU) with a typeless user payload.
+ * Represents a Protocol Data Unit (PDU) with a body as raw JSON.
  * <p>
- * This class stores general PDU structure without knowledge about the payload type.
- * The payload is stored as raw JSON and converted to specific class type on demand.
- * <p>
- * <strong>Sample PDU Specification</strong>
- * <pre>{@literal
- * {
- *    "action": "<service>/<operation>/<response>",
- *    "body": {
- *         "channel": "<channel name>",
- *         "message": "<JSON-encoded message>" // payload
- *    },
- *    "id": <PDU id> | "<PDU id>"
- * }}
- * </pre>
+ * This class stores PDU when type of {@code body} is not known yet. The method
+ * {@link #convertBodyTo(Class)  convertBodyTo()} converts the {@code body} to a specific type.
  */
 public class PduRaw extends Pdu<AnyJson> {
   public PduRaw() { }

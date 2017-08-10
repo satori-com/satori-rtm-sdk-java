@@ -6,13 +6,13 @@ import com.google.common.collect.Lists;
 import java.util.List;
 
 /**
- * Represents a message coming from RTM.
+ * Represents the body value of a PDU for a subscription data.
  * <p>
- * A Subscription Data PDU delivers channel messages (possibly filtered and transformed messages in
- * case of a viewed subscription). A single Subscription Data PDU can contain multiple messages
- * grouped in the array messages field.
+ * Subscription data PDUs contain messages published to a subscribed channel. If the
+ * subscription uses a streamview, the messages may be filtered and transformed. A single
+ * {@code SubscriptionData} can contain multiple messages.
  * <p>
- * The PDU has the following structure:
+ * Subscription data PDUs have the following structure:
  * <pre>{@literal
  * {
  *     "action": "rtm/subscription/data",

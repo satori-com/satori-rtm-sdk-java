@@ -1,22 +1,12 @@
 package com.satori.rtm.model;
 
 /**
- * Represents the body of a Protocol Data Unit (PDU) for subscription-specific notification.
+ * Represents the body value of a PDU for a subscription info.
+ *
+ * {@code SubscriptionInfo} objects provide information about a subscription, including the type of
+ * info and the reason why RTM sent the info.
  * <p>
- * A Subscription Info PDU contains information about a subscription, which includes the type of
- * info and the reason why RTM sent it. The subscription is not terminated after receiving a
- * notification.
- * <p>
- * The PDU has the following structure:
- * <pre>{@literal
- * {
- *    "subscription_id": string(),
- *    "info": string(),
- *    "reason": text()
- *    "position": string(),
- *    "missed_message_count": count()
- * }}
- * </pre>
+ * RTM doesn't terminate your subscription after it sends a subscription info.
  */
 public class SubscriptionInfo {
   private String subscription_id;

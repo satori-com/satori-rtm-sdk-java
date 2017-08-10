@@ -1,16 +1,15 @@
 package com.satori.rtm.model;
 
 /**
- * An interface representing any JSON element.
+ * Defines a method that converts any JSON into an object of a specified type.
  */
 public interface AnyJson {
   /**
-   * Deserializes the JSON element into an object of the specified type.
+   * Deserializes a JSON element into an object of the specified type.
    * <p>
-   * It is not suitable to use if the specified class is a generic type since it
-   * will not have the generic type information because of the Type Erasure feature of Java. This
-   * method works fine if the any of the fields of the specified object are generics, just the
-   * object itself should not be a generic type.
+   * The type {@code T} can't be a generic type, because Java type erasure removes generic type
+   * information during compilation. However, fields <em>in</em> the specified type can have
+   * generic types.
    */
   <T> T convertToType(final Class<T> clazz);
 }
