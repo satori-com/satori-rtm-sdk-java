@@ -1,3 +1,8 @@
+v1.1.0 (2017-08-11)
+-------------------
+* Add proxy support
+* Update javadocs
+
 v1.0.3 (2017-05-09)
 -------------------
 * Upgrade 3rd party deps to the latest versions
