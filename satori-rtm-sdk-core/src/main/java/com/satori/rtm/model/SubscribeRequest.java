@@ -38,7 +38,6 @@ package com.satori.rtm.model;
  *    "id": RequestId OPTIONAL
  * }}
  * </pre>
- * <p>
  */
 public class SubscribeRequest {
   private String channel;
