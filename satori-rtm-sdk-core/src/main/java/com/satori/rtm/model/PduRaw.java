@@ -3,8 +3,8 @@ package com.satori.rtm.model;
 /**
  * Represents a Protocol Data Unit (PDU) with a body as raw JSON.
  * <p>
- * This class stores PDU when type of {@code body} is not known yet. The method
- * {@link #convertBodyTo(Class)  convertBodyTo()} converts the {@code body} to a specific type.
+ * This class stores a PDU when the type of {@code body} is not yet known. The method
+ * {@link #convertBodyTo(Class) convertBodyTo()} converts the {@code body} to a specific type.
  */
 public class PduRaw extends Pdu<AnyJson> {
   public PduRaw() { }
