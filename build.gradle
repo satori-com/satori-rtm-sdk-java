@@ -104,6 +104,19 @@ subprojects {
                         }
                     }
                 }
+
+                pom.whenConfigured { p ->
+                    // Gradle could include satori-rtm-sdk-core' dependencies with 'compile' and
+                    // 'test' scope to pom.xml. Remove one of them if we detect this case.
+                    def numberOfCoreDeps = p.dependencies.findAll { dep ->
+                        dep.artifactId == 'satori-rtm-sdk-core'
+                    }
+                    if (1 < numberOfCoreDeps.size()) {
+                        p.dependencies.removeAll { dep ->
+                            dep.artifactId == 'satori-rtm-sdk-core' && dep.scope == 'test'
+                        }
+                    }
+                }
             }
         }
     }
