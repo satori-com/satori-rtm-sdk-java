@@ -31,7 +31,7 @@ import java.util.EnumSet;
  * {@code RtmClient} instances are thread-safe so you can reuse them freely across multiple threads.
  * <p>
  * This is an example of to use an RTM client to subscribe to a channel:
- * <pre>{@code
+ * <pre>
  * RtmClient client = new RtmClientBuilder(YOUR_ENDPOINT, YOUR_APPKEY)
  *   // Sets a listener for RTM lifecycle events
  *   .setListener(new RtmClientAdapter() {
@@ -54,7 +54,8 @@ import java.util.EnumSet;
  *   }
  * });
  * // Connects the client to RTM
- * client.start();}</pre>
+ * client.start();
+ * </pre>
  */
 public interface RtmClient {
   /**

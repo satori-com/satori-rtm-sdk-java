@@ -31,19 +31,21 @@ import java.util.regex.Pattern;
  *
  * <p>The following example demonstrates how to use {@code RtmClientBuilder} to get an RTM client:
  *
- * <pre>{@code RtmClient client = new RtmClientBuilder(YOUR_ENDPOINT, YOUR_APPKEY)
- *     // Sets a proxy server for the connection to RTM
- *     .setProxy(URI.create("http://127.0.0.1:3128"))
- *     // Sets a listener for RTM lifecycle events
- *     .setListener(new RtmClientAdapter() {
+ * <pre>
+ * RtmClient client = new RtmClientBuilder(YOUR_ENDPOINT, YOUR_APPKEY)
+ *   // Sets a proxy server for the connection to RTM
+ *   .setProxy(URI.create("http://127.0.0.1:3128"))
+ *   // Sets a listener for RTM lifecycle events
+ *   .setListener(new RtmClientAdapter() {
  *     // When the client successfully connects to RTM
- *       &#64;Override
- *       public void onEnterConnected(RtmClient client) {
- *         System.out.println("Connected to Satori RTM!");
- *       }
- *     })
- *     // Builds the client instance
- *     .build();}</pre>
+ *     &#64;Override
+ *     public void onEnterConnected(RtmClient client) {
+ *       System.out.println("Connected to Satori RTM!");
+ *     }
+ *   })
+ *   // Builds the client instance
+ *   .build();
+ * </pre>
  * <p>
  * NOTES:
  * <ul>
