@@ -75,10 +75,6 @@ class RtmService {
     return send("rtm/delete", request, ack, DeleteReply.class);
   }
 
-  public void search(SearchRequest request, Callback<Pdu<SearchReply>> callback) {
-    sendWithCallback("rtm/search", request, SearchReply.class, callback);
-  }
-
   /**
    * Invoked by client after the WebSocket connection is established.
    *
@@ -194,28 +190,5 @@ class RtmService {
 
     FutureUtils.addExceptionLogging(future, "RTM action is failed", LOG);
     return future;
-  }
-
-  <T> void sendWithCallback(final String action, final Object payload, final Class<T> clazz,
-                            final Callback<Pdu<T>> userCallback) {
-    final Callback<Pdu<T>> callback =
-        FutureUtils.addExceptionLogging(userCallback, "RTM action is failed", LOG);
-
-    Runnable runnable = new Runnable() {
-      @Override
-      public void run() {
-        Connection connection = getConnection();
-        if (null == connection) {
-          throw new IllegalStateException("You aren't connected to RTM");
-        }
-        connection.sendWithCallback(action, payload, clazz, callback);
-      }
-    };
-
-    try {
-      performAction(runnable);
-    } catch (Exception ex) {
-      callback.onFailure(ex);
-    }
   }
 }

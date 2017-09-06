@@ -170,11 +170,6 @@ class RtmClientImpl implements RtmClient {
     return mRtmService.delete(new DeleteRequest(key), ack);
   }
 
-  @Override
-  public void search(String prefix, Callback<Pdu<SearchReply>> callback) {
-    mRtmService.search(new SearchRequest(prefix), callback);
-  }
-
   public ExecutorService getDispatcher() {
     return mDispatcher;
   }
