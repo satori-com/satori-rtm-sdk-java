@@ -2,25 +2,15 @@ package com.satori.rtm;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.satori.rtm.model.Pdu;
 import com.satori.rtm.model.ReadReply;
-import com.satori.rtm.model.SearchReply;
-import com.satori.rtm.model.WriteReply;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 @RunWith(JUnit4.class)
 public class KVStorageTest extends AbstractRealTest {
