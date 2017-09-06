@@ -64,45 +64,4 @@ public class KVStorageTest extends AbstractRealTest {
 
     client.stop();
   }
-
-  @Test
-  @Ignore
-  public void search() throws ExecutionException, InterruptedException {
-    RtmClient client = clientBuilder().build();
-    client.start();
-
-    final int numOfChannels = 5;
-    final List<String> channels = new ArrayList<String>();
-    final CountDownLatch lock = new CountDownLatch(1);
-
-
-    // create some keys with same prefix
-    List<ListenableFuture<Pdu<WriteReply>>> col =
-        new ArrayList<ListenableFuture<Pdu<WriteReply>>>();
-    for (int i = 0; i < numOfChannels; i++) {
-      col.add(client.write(channel + i, "value", Ack.YES));
-    }
-    awaitFuture(Futures.successfulAsList(col));
-
-    // search by prefix
-    client.search(channel, new Callback<Pdu<SearchReply>>() {
-      @Override
-      public void onResponse(Pdu<SearchReply> result) {
-        channels.addAll(result.getBody().getChannels());
-        if ("rtm/search/ok".equals(result.getAction())) {
-          lock.countDown();
-        }
-      }
-
-      @Override
-      public void onFailure(Throwable t) { }
-    });
-
-    boolean isAwaitSuccessful = lock.await(5, TimeUnit.SECONDS);
-    assertThat(isAwaitSuccessful, is(true));
-    for (int i = 0; i < numOfChannels; i++) {
-      assertThat(channels, hasItem(channel + i));
-    }
-    client.stop();
-  }
 }

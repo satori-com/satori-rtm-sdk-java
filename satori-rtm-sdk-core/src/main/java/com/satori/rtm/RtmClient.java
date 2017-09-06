@@ -282,18 +282,4 @@ public interface RtmClient {
    * @return asynchronous result of the delete request
    */
   ListenableFuture<Pdu<DeleteReply>> delete(String key, Ack ack);
-
-
-  /**
-   * Returns all channels that have a name that starts with {@code prefix} asynchronously.
-   * <p>
-   * This method passes RTM replies to the callback. RTM may send multiple
-   * responses to the same search request: zero or more search result PDUs with
-   * an action of `rtm/search/data` (depending on the results of the search). After the search
-   * result PDUs, RTM follows with PDU with an action of `rtm/search/ok`.
-   *
-   * @param prefix   channels prefix.
-   * @param callback callback that's invoked when the SDK receives a response from RTM
-   */
-  void search(String prefix, Callback<Pdu<SearchReply>> callback);
 }

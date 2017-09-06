@@ -175,42 +175,6 @@ public class Connection {
   }
 
   /**
-   * Asynchronously sends a Protocol Data Unit (<strong>PDU</strong>) to RTM. The response from
-   * RTM is passed to the callback.
-   * <p>
-   * This method creates a PDU from an operation and an object. It then sends the PDU to RTM. The object
-   * must be serializable into a JSON object.
-   * <p>
-   * Use {@code responseClazz} to specify the format of the PDU body returned by RTM. The body is converted to an
-   * object of type {@code responseClazz} before it's returned.
-   * <p>
-   * Use this method when RTM responds with multiple PDUs. All of the response PDUs are passed to
-   * {@link Callback#onResponse(Object) callback.onResponse()}.
-   *
-   * @param operation     PDU operation, for example, {@code "rtm/publish"}
-   * @param body          PDU body
-   * @param responseClazz a {@link Class} instance of the response object type
-   * @param callback      callback that RTM invokes with the response or responses
-   * @param <T>           the response object type
-   */
-  public <T> void sendWithCallback(String operation, Object body, final Class<T> responseClazz,
-                                   final Callback<Pdu<T>> callback) {
-    Pdu<Object> pdu = new Pdu<Object>(operation, body, generateId());
-    sendWithCallback(pdu, new Callback<PduRaw>() {
-      @Override
-      public void onResponse(PduRaw result) {
-        Pdu<T> typed = (null != result) ? result.convertBodyTo(responseClazz) : null;
-        callback.onResponse(typed);
-      }
-
-      @Override
-      public void onFailure(Throwable t) {
-        callback.onFailure(t);
-      }
-    });
-  }
-
-  /**
    * Stops a specific connection and releases all allocated resources. All communication with RTM stops
    * when you call this method and the events aren't propagated to any listeners.
    * <p>
