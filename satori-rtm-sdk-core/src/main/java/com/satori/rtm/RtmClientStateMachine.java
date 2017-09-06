@@ -229,8 +229,8 @@ class RtmClientStateMachine extends AbstractStateMachine<RtmClientStateMachine.A
     @Override
     public void enter(RtmClientStateMachine context) {
       context.resetFailCount();
-      context.getListener().onEnterConnected(context.mClient);
       context.isTransportConnected = true;
+      context.getListener().onEnterConnected(context.mClient);
     }
 
     @Override
