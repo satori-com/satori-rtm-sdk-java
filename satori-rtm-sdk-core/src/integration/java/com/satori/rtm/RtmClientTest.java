@@ -19,6 +19,29 @@ import java.util.concurrent.ThreadFactory;
 
 public class RtmClientTest extends AbstractRealTest {
   @Test
+  public void isConnectedTest() throws InterruptedException {
+    RtmClient client = clientBuilder()
+        .setListener(new RtmClientAdapter() {
+          @Override
+          public void onEnterConnected(RtmClient client) {
+            assertThat(client.isConnected(), equalTo(true));
+            addEvent("connected");
+          }
+
+          @Override
+          public void onLeaveConnected(RtmClient client) {
+            assertThat(client.isConnected(), equalTo(false));
+            addEvent("disconnected");
+          }
+        })
+        .build();
+    client.start();
+    assertThat(getEvent(), equalTo("connected"));
+    client.stop();
+    assertThat(getEvent(), equalTo("disconnected"));
+  }
+
+  @Test
   public void zeroPendingQueue() throws InterruptedException {
     RtmClient client = clientBuilder()
         .setPendingActionQueueLength(0)
