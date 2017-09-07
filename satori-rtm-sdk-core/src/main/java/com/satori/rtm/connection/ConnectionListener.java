@@ -1,9 +1,9 @@
 package com.satori.rtm.connection;
 
-import com.satori.rtm.model.PduRaw;
-import com.satori.rtm.transport.TransportListener;
 import com.satori.rtm.model.InvalidJsonException;
 import com.satori.rtm.model.PduException;
+import com.satori.rtm.model.PduRaw;
+import com.satori.rtm.transport.TransportListener;
 
 /**
  * Defines listener methods for changes in connection state. For example, you can add code that executes when the

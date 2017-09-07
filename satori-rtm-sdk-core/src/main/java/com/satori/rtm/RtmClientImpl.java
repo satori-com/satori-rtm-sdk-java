@@ -15,8 +15,6 @@ import com.satori.rtm.model.PduRaw;
 import com.satori.rtm.model.PublishReply;
 import com.satori.rtm.model.ReadReply;
 import com.satori.rtm.model.ReadRequest;
-import com.satori.rtm.model.SearchReply;
-import com.satori.rtm.model.SearchRequest;
 import com.satori.rtm.model.SystemWideException;
 import com.satori.rtm.model.WriteReply;
 import com.satori.rtm.model.WriteRequest;

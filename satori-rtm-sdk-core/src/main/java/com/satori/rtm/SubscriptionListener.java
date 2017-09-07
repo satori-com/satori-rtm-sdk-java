@@ -18,7 +18,6 @@ import java.util.EnumSet;
  * ({@link SubscriptionConfig#SubscriptionConfig(EnumSet, SubscriptionListener)})
  * <p>
  * {@link SubscriptionAdapter} is an empty implementation of this interface.
- *
  */
 public interface SubscriptionListener {
   /**

@@ -13,7 +13,6 @@ import com.satori.rtm.transport.Transport;
  * {@link RtmClientBuilder#setListener(RtmClientListener) RtmClientBuilder.setListener()}.
  * <p>
  * {@link RtmClientAdapter} is an empty implementation of this interface.
- *
  */
 public interface RtmClientListener {
   /**

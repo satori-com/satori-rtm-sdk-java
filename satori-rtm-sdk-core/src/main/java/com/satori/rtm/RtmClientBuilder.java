@@ -49,11 +49,11 @@ import java.util.regex.Pattern;
  * <p>
  * NOTES:
  * <ul>
- *   <li> The order in which you call the "set" methods doesn't matter</li>
- *   <li>
- *     Get the values for {@code YOUR_ENDPOINT} and {@code YOUR_APPKEY} from your Satori project page, which you
- *     access in the Dev Portal.
- *   </li>
+ * <li> The order in which you call the "set" methods doesn't matter</li>
+ * <li>
+ * Get the values for {@code YOUR_ENDPOINT} and {@code YOUR_APPKEY} from your Satori project page, which you
+ * access in the Dev Portal.
+ * </li>
  * </ul>
  */
 public class RtmClientBuilder {
@@ -87,11 +87,11 @@ public class RtmClientBuilder {
    * settings. {@code RtmClientBuilder} uses the builder pattern. First, call configuration methods to set desired
    * options, and then call {@link #build()}.
    * <p>
-   *   Get the values for {@code endpoint} and {@code appKey} from your Satori project page, which you
-   *   access in the Dev Portal.
+   * Get the values for {@code endpoint} and {@code appKey} from your Satori project page, which you
+   * access in the Dev Portal.
    *
    * @param endpoint endpoint from your project page in Dev Portal
-   * @param appKey appkey from your project page in Dev Portal
+   * @param appKey   appkey from your project page in Dev Portal
    */
   public RtmClientBuilder(String endpoint, String appKey) {
     if (Strings.isNullOrEmpty(endpoint)) {
@@ -370,7 +370,7 @@ public class RtmClientBuilder {
    * <p>
    * This method is intended for advanced users who want control over client task execution.
    *
-   * @param dispatcher event dispatcher
+   * @param dispatcher              event dispatcher
    * @param shouldDispatchTransport if {@code true}, the dispatcher executes transport events,
    *                                otherwise a dispatcher isn't used for transport events
    * @return the current builder object

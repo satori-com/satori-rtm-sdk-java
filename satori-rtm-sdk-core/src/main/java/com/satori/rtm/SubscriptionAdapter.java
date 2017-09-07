@@ -10,7 +10,6 @@ import com.satori.rtm.model.UnsubscribeRequest;
 
 /**
  * An empty implementation of the {@link SubscriptionListener} interface.
- *
  */
 public class SubscriptionAdapter implements SubscriptionListener {
   @Override

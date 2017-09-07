@@ -8,7 +8,6 @@ import com.satori.rtm.model.PduException;
 import com.satori.rtm.model.PublishReply;
 import com.satori.rtm.model.ReadReply;
 import com.satori.rtm.model.ReadRequest;
-import com.satori.rtm.model.SearchReply;
 import com.satori.rtm.model.WriteReply;
 import com.satori.rtm.model.WriteRequest;
 import com.satori.rtm.transport.TransportException;
@@ -139,7 +138,7 @@ public interface RtmClient {
    * See {@link SubscriptionConfig#setFilter(String) SubscriptionConfig.setFilter()}. You set a
    * {@code SubscriptionListener} and subscription modes
    * in the {@link SubscriptionConfig#SubscriptionConfig(EnumSet, SubscriptionListener) SubscriptionConfig} constructor.
-   <p>
+   * <p>
    * You can subscribe at any time. The RTM SDK manages the subscription and sends a subscribe
    * request when the RtmClient is connected. Use the {@code subscriptionConfig} parameter to set
    * various subscription options such as streamview, history, position, and so forth.
@@ -170,19 +169,19 @@ public interface RtmClient {
    * If the publish operation fails, then the exception is passed to the {@link ListenableFuture}
    * object:
    * <ul>
-   *     <li>
-   *         If you call {@link ListenableFuture#get() ListenableFuture.get()} to get the result,
-   *         it throws an
-   *         {@link java.util.concurrent.ExecutionException} and passes the original exception to it.
-   *     </li>
-   *     <li>
-   *         If you call
-   *         {@link com.google.common.util.concurrent.Futures#addCallback Futures.addCallback()} to
-   *         get the result,
-   *         the exception is passed to
-   *         {@link com.google.common.util.concurrent.FutureCallback#onFailure FutureCallback.onFailure()}
-   *         unaltered.
-   *     </li>
+   * <li>
+   * If you call {@link ListenableFuture#get() ListenableFuture.get()} to get the result,
+   * it throws an
+   * {@link java.util.concurrent.ExecutionException} and passes the original exception to it.
+   * </li>
+   * <li>
+   * If you call
+   * {@link com.google.common.util.concurrent.Futures#addCallback Futures.addCallback()} to
+   * get the result,
+   * the exception is passed to
+   * {@link com.google.common.util.concurrent.FutureCallback#onFailure FutureCallback.onFailure()}
+   * unaltered.
+   * </li>
    * </ul>
    * <p>
    * The publish operation can fail with the following execution exceptions:
@@ -206,6 +205,7 @@ public interface RtmClient {
    * Gets the current {@link Connection}.
    * <p>
    * If the client isn't connected, this method returns {@code null}.
+   *
    * @return {@link Connection} or null if client isn't connected.
    */
   Connection getConnection();
@@ -214,9 +214,8 @@ public interface RtmClient {
    * Reads the value of the specified key from a key-value store. The operation is asynchronous.
    * <p>
    * The documentation for {@link #publish(String, Object, Ack)} publish()} describes how to get
-   * the method response,
-   * and how to handle errors.
-   * <p>
+   * the method response, and how to handle errors.
+   *
    * @param key key name
    * @return result of the read operation, returned asynchronously
    * @see #publish(String, Object, Ack)
@@ -227,9 +226,7 @@ public interface RtmClient {
    * Reads the value of the specified key from a key-value store. The operation is asynchronous.
    * <p>
    * The documentation for {@link #publish(String, Object, Ack) publish()} describes how to get
-   * the method response,
-   * and how to handle errors.
-   * <p>
+   * the method response, and how to handle errors.
    *
    * @param request read request
    * @return asynchronous result of the read request
@@ -240,9 +237,7 @@ public interface RtmClient {
    * Writes the specified key-value pair to a key-value store. The operation is asynchronous.
    * <p>
    * The documentation for {@link #publish(String, Object, Ack) publish()} describes how to get
-   * the method response,
-   * and how to handle errors.
-   * <p>
+   * the method response, and how to handle errors.
    *
    * @param key   key name
    * @param value value to store
@@ -257,9 +252,7 @@ public interface RtmClient {
    * Writes the specified key-value pair to a key-value store. The operation is asynchronous.
    * <p>
    * The documentation for {@link #publish(String, Object, Ack) publish()} describes how to get
-   * the method response,
-   * and how to handle errors.
-   * <p>
+   * the method response, and how to handle errors.
    *
    * @param writeRequest write request
    * @param ack          determines if RTM should acknowledge the write operation
@@ -273,9 +266,7 @@ public interface RtmClient {
    * Deletes the value of the specified key from the key-value store. The operation is asynchronous.
    * <p>
    * The documentation for {@link #publish(String, Object, Ack) publish()} describes how to get
-   * the method response,
-   * and how to handle errors.
-   * <p>
+   * the method response, and how to handle errors.
    *
    * @param key key name
    * @param ack determines if RTM should acknowledge the delete operation

@@ -60,7 +60,7 @@ subprojects {
             logger.lifecycle("Running test: " + descriptor)
         }
 
-        systemProperties = [ RTM_CONFIG: rtm_config_path ]
+        systemProperties = [RTM_CONFIG: rtm_config_path]
     }
 
     uploadArchives {

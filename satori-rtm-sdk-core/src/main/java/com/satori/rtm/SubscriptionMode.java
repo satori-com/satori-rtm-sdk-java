@@ -43,7 +43,6 @@ public enum SubscriptionMode {
       EnumSet.of(FAST_FORWARD);
 
   /**
-   *
    * RTM always tracks the {@code position} value for the subscription and tries to
    * use it when resubscribing after the connection drops and the client reconnects.
    * <p>

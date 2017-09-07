@@ -16,7 +16,8 @@ public class SubscriptionConfig {
 
   /**
    * Creates a subscription configuration with a set of subscription modes and a subscription listener.
-  * @param modes    subscription modes
+   *
+   * @param modes    subscription modes
    * @param listener subscription listener
    */
   public SubscriptionConfig(EnumSet<SubscriptionMode> modes, SubscriptionListener listener) {
@@ -78,6 +79,7 @@ public class SubscriptionConfig {
    * <p>
    * To use this method, you also have to configure channel history settings in the
    * Dev Portal.
+   *
    * @param count count value
    * @return the current {@code SubscriptionConfig} object
    */
@@ -100,6 +102,7 @@ public class SubscriptionConfig {
    * A streamfilter is an SQL statement that selects and processes messages in the channel.
    * <p>
    * See the chapter "Views (formerly filters)" in the <em>Satori Docs</em> for more information
+   *
    * @param filter filter string
    * @return the current {@code SubscriptionConfig}
    */

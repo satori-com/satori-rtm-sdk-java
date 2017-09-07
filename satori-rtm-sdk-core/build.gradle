@@ -33,7 +33,7 @@ uploadArchives {
     }
 }
 
-task integrationTestJar (type: Jar, dependsOn: integrationClasses) {
+task integrationTestJar(type: Jar, dependsOn: integrationClasses) {
     from sourceSets.integration.output
     description = 'Build the integration tests'
     group = 'verification'

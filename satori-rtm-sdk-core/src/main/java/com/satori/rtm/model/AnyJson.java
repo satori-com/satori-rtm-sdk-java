@@ -12,7 +12,7 @@ public interface AnyJson {
    * generic types.
    *
    * @param clazz the class of T
-   * @param <T> the type of the desired object
+   * @param <T>   the type of the desired object
    * @return an object of type T from the json. Returns null if json is null
    */
   <T> T convertToType(final Class<T> clazz);
