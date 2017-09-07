@@ -124,55 +124,7 @@ public class WebSocketTransport implements Transport {
       }
 
       @Override
-      public void onConnectError(WebSocket websocket, WebSocketException exception)
-          throws Exception {
-        if (null != listener) {
-          listener.onConnectingError(exception);
-        }
-      }
-
-      @Override
-      public void onFrameError(WebSocket websocket, WebSocketException cause, WebSocketFrame frame)
-          throws Exception {
-        if (null != listener) {
-          listener.onTransportError(cause);
-        }
-      }
-
-      @Override
-      public void onMessageError(WebSocket websocket, WebSocketException cause,
-                                 List<WebSocketFrame> frames) throws Exception {
-        if (null != listener) {
-          listener.onTransportError(cause);
-        }
-      }
-
-      @Override
       public void onError(WebSocket websocket, WebSocketException cause) throws Exception {
-        if (null != listener) {
-          listener.onTransportError(cause);
-        }
-      }
-
-      @Override
-      public void onTextMessageError(WebSocket websocket, WebSocketException cause, byte[] data)
-          throws Exception {
-        if (null != listener) {
-          listener.onTransportError(cause);
-        }
-      }
-
-      @Override
-      public void onSendError(WebSocket websocket, WebSocketException cause, WebSocketFrame frame)
-          throws Exception {
-        if (null != listener) {
-          listener.onTransportError(cause);
-        }
-      }
-
-      @Override
-      public void onUnexpectedError(WebSocket websocket, WebSocketException cause)
-          throws Exception {
         if (null != listener) {
           listener.onTransportError(cause);
         }
