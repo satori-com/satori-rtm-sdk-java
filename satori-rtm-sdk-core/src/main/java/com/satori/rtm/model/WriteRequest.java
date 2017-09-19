@@ -8,8 +8,9 @@ package com.satori.rtm.model;
  * {
  *     "action": "rtm/write",
  *     "body": {
- *         "channel": ChannelName
- *         "message": Message
+ *         "channel": ChannelName,
+ *         "message": Message,
+ *         "position": Position OPTIONAL
  *     },
  *     "id": RequestId OPTIONAL
  * }}
@@ -18,13 +19,18 @@ package com.satori.rtm.model;
 public class WriteRequest<T> {
   private String channel;
   private T message;
-
+  private String position;
 
   public WriteRequest() { }
 
   public WriteRequest(String channel, T message) {
+    this(channel, message, null);
+  }
+
+  public WriteRequest(String channel, T message, String position) {
     this.channel = channel;
     this.message = message;
+    this.position = position;
   }
 
   public String getChannel() {
@@ -33,5 +39,9 @@ public class WriteRequest<T> {
 
   public T getMessage() {
     return message;
+  }
+
+  public String getPosition() {
+    return position;
   }
 }

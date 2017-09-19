@@ -2,11 +2,16 @@ package com.satori.rtm;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import com.satori.rtm.model.Pdu;
+import com.satori.rtm.model.PduException;
 import com.satori.rtm.model.ReadReply;
+import com.satori.rtm.model.WriteReply;
+import com.satori.rtm.model.WriteRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -34,6 +39,33 @@ public class KVStorageTest extends AbstractRealTest {
     Pdu<ReadReply> pdu = awaitFuture(client.read(channel));
     assertThat(pdu.getBody().getMessageAsType(String.class), equalTo("value2"));
     client.stop();
+  }
+
+  @Test
+  public void casSuccess() throws ExecutionException {
+    RtmClient client = clientBuilder().build();
+    client.start();
+    Pdu<WriteReply> reply = awaitFuture(client.write(channel, "value1", Ack.YES));
+    awaitFuture(client
+        .write(new WriteRequest<String>(channel, "value2", reply.getBody().getPosition()),
+            Ack.YES));
+    Pdu<ReadReply> pdu = awaitFuture(client.read(channel));
+    assertThat(pdu.getBody().getMessageAsType(String.class), equalTo("value2"));
+    client.stop();
+  }
+
+  @Test
+  public void casFailed() throws InterruptedException {
+    RtmClient client = clientBuilder().build();
+    client.start();
+    ListenableFuture<Pdu<WriteReply>> future =
+        client.write(new WriteRequest<String>(channel, "value2", "bad_position"), Ack.YES);
+    try {
+      future.get();
+      assertThat(false, is(true));
+    } catch (ExecutionException e) {
+      assertThat(e.getCause(), instanceOf(PduException.class));
+    }
   }
 
   @Test
