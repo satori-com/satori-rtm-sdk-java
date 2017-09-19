@@ -65,6 +65,7 @@ public class KVStorageTest extends AbstractRealTest {
       assertThat(false, is(true));
     } catch (ExecutionException e) {
       assertThat(e.getCause(), instanceOf(PduException.class));
+      assertThat(((PduException) e.getCause()).getReply().getError(), equalTo("invalid_format"));
     }
   }
 

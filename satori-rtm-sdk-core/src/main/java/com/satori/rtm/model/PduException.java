@@ -14,4 +14,8 @@ public class PduException extends Exception {
   public PduRaw getPdu() {
     return mPdu;
   }
+
+  public CommonError getReply() {
+    return mPdu.convertBodyTo(CommonError.class).getBody();
+  }
 }
