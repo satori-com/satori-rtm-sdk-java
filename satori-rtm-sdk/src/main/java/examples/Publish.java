@@ -44,8 +44,7 @@ public class Publish {
         try {
           throw caught;
         } catch (PduException e) {
-          PduRaw pdu = e.getPdu();
-          CommonError error = pdu.convertBodyTo(CommonError.class).getBody();
+          CommonError error = e.getReply();
           System.out.println(String.format("Failed to publish. RTM replied with the error %s: %s",
               error.getError(), error.getReason()));
         } catch (Throwable e) {

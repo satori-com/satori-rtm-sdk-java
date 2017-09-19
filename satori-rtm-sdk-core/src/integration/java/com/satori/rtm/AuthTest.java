@@ -82,7 +82,7 @@ public class AuthTest extends AbstractRealTest {
       Throwable cause = executionException.getCause();
       if (cause instanceof PduException) {
         PduException ex = (PduException) cause;
-        CommonError error = ex.getPdu().convertBodyTo(CommonError.class).getBody();
+        CommonError error = ex.getReply();
         dispatcher.add(error.getError());
       }
     }
@@ -149,8 +149,7 @@ public class AuthTest extends AbstractRealTest {
           throw exception;
         } catch (AuthException ex) {
           PduException errorOutcomeException = (PduException) ex.getCause();
-          CommonError error =
-              errorOutcomeException.getPdu().convertBodyTo(CommonError.class).getBody();
+          CommonError error = errorOutcomeException.getReply();
           dispatcher.add(error.getError());
         } catch (Throwable t) {
           // doesn't match
