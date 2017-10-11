@@ -1,3 +1,9 @@
+v1.1.1 (2017-10-11)
+-------------------
+* Add method to PduException to get common RTM reply in case of error
+* Add optional position field to write request
+* Leave only `onError` callback to handle transport exceptions from WebSocket library
+
 v1.1.0 (2017-08-11)
 -------------------
 * Add proxy support
