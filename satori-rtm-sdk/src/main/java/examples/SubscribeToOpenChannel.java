@@ -28,7 +28,7 @@ public class SubscribeToOpenChannel {
       }
     };
 
-    client.createSubscription(channel, SubscriptionMode.SIMPLE, listener);
+    client.createSubscription(channelName, SubscriptionMode.SIMPLE, listener);
 
     client.start();
   }

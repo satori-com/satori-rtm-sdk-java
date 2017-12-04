@@ -674,6 +674,34 @@ public class ChannelTest extends AbstractRealTest {
     client.stop();
   }
 
+  @Test
+  public void onlyValueChanges() throws InterruptedException {
+    RtmClient client = clientBuilder().build();
+    client.start();
+    SubscriptionConfig config =
+      new SubscriptionConfig(SubscriptionMode.SIMPLE, logSubscriptionListener(
+              SubscriptionListenerType.SUBSCRIBED,
+              SubscriptionListenerType.SUBSCRIPTION_DATA
+      )).setOnly("value_changes");
+    client.createSubscription(channel, config);
+
+    assertThat(getEvent(), equalTo("on-enter-subscribed"));
+
+    client.publish(channel, "message1", Ack.NO);
+    client.publish(channel, "message1", Ack.NO);
+    client.publish(channel, "message2", Ack.NO);
+    client.publish(channel, 1, Ack.NO);
+    client.publish(channel, 1, Ack.NO);
+    client.publish(channel, true, Ack.NO);
+
+    assertThat(getEvent(), equalTo("message1"));
+    assertThat(getEvent(), equalTo("message2"));
+    assertThat(getEvent(), equalTo("1"));
+    assertThat(getEvent(), equalTo("true"));
+
+    client.stop();
+  }
+
   public static class MyCustomBody {
     String fieldA;
     String fieldB;
