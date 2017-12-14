@@ -14,6 +14,7 @@ package com.satori.rtm.model;
  *         "fast_forward": Boolean, OPTIONAL
  *         "period": Count, OPTIONAL
  *         "position": ChannelStreamPosition, OPTIONAL
+ *         "only": "value_changes", OPTIONAL
  *         "history": {
  *             "count" : Count, Non-negative integer, OPTIONAL
  *             "age"   : Age, Non-negative integer, OPTIONAL
@@ -30,6 +31,7 @@ package com.satori.rtm.model;
  *         "force": Boolean, OPTIONAL
  *         "fast_forward": Boolean, OPTIONAL
  *         "position": ChannelStreamPosition, OPTIONAL
+ *         "only": "value_changes", OPTIONAL
  *         "history": {
  *             "count" : Count, Non-negative integer, OPTIONAL
  *             "age"   : Age, Non-negative integer, OPTIONAL
@@ -47,6 +49,7 @@ public class SubscribeRequest {
   private Boolean fast_forward;
   private String filter;
   private Integer period;
+  private String only;
 
   public SubscribeRequest() { }
 
@@ -109,6 +112,14 @@ public class SubscribeRequest {
 
   public void setPeriod(Integer period) {
     this.period = period;
+  }
+
+  public String getOnly() {
+    return only;
+  }
+
+  public void setOnly(String only) {
+    this.only = only;
   }
 
   static public class History {

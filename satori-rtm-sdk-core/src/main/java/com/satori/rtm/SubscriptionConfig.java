@@ -112,6 +112,18 @@ public class SubscriptionConfig {
   }
 
   /**
+   * Configures subscription in the way to not send repeatable messages in subscription/data,
+   * e.g. client will receive [1,2,1,3] from channel [1,1,2,2,2,1,3,3].
+   *
+   * @param only specify only option
+   * @return the current {@code SubscriptionConfig} object
+   */
+  public SubscriptionConfig setOnly(String only) {
+    mSubscribeRequest.setOnly(only);
+    return this;
+  }
+
+  /**
    * Sets the period of time, in seconds, that RTM runs the streamfilter on the channel before it
    * sends the result to the RTM client.
    * See the chapter "Views (formerly filters)" in the <em>Satori Docs</em> for more information
@@ -151,6 +163,7 @@ public class SubscriptionConfig {
     request.setFastForward(mSubscriptionModes.contains(SubscriptionMode.FAST_FORWARD));
     request.setFilter(mSubscribeRequest.getFilter());
     request.setPeriod(mSubscribeRequest.getPeriod());
+    request.setOnly(mSubscribeRequest.getOnly());
     return request;
   }
 
