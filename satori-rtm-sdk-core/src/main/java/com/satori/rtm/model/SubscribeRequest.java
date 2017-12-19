@@ -50,12 +50,14 @@ public class SubscribeRequest {
   private String filter;
   private Integer period;
   private String only;
+  private Boolean prefix;
 
   public SubscribeRequest() { }
 
   public SubscribeRequest(String channel, String position) {
     this.channel = channel;
     this.position = position;
+    this.prefix = false;
   }
 
   public String getChannel() {
@@ -120,6 +122,14 @@ public class SubscribeRequest {
 
   public void setOnly(String only) {
     this.only = only;
+  }
+
+  public Boolean getPrefix() {
+    return prefix;
+  }
+
+  public void setPrefix(Boolean prefix) {
+    this.prefix = prefix;
   }
 
   static public class History {

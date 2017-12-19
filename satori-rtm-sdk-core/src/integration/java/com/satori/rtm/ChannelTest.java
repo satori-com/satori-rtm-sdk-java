@@ -702,6 +702,28 @@ public class ChannelTest extends AbstractRealTest {
     client.stop();
   }
 
+  @Test
+  public void prefixSubscription() throws InterruptedException {
+    RtmClient client = clientBuilder().build();
+    client.start();
+    SubscriptionConfig config =
+            new SubscriptionConfig(SubscriptionMode.SIMPLE, logSubscriptionListener(
+                    SubscriptionListenerType.SUBSCRIBED,
+                    SubscriptionListenerType.SUBSCRIPTION_DATA
+            )).setPrefix(true);
+    client.createSubscription(channel + "ani", config);
+
+    assertThat(getEvent(), equalTo("on-enter-subscribed"));
+
+    client.publish(channel + "animal", "message1", Ack.NO);
+    client.publish(channel + "anime", "message2", Ack.NO);
+
+    assertThat(getEvent(), equalTo("message1"));
+    assertThat(getEvent(), equalTo("message2"));
+
+    client.stop();
+  }
+
   public static class MyCustomBody {
     String fieldA;
     String fieldB;
