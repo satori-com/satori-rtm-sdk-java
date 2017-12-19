@@ -724,6 +724,34 @@ public class ChannelTest extends AbstractRealTest {
     client.stop();
   }
 
+  @Test
+  public void prefixSubscriptionDataChannel() throws InterruptedException {
+    RtmClient client = clientBuilder().build();
+    client.start();
+    SubscriptionAdapter listener = new SubscriptionAdapter() {
+      @Override
+      public void onEnterSubscribed(SubscribeRequest request, SubscribeReply reply) {
+        dispatcher.add("enter-subscribed");
+      }
+
+      @Override
+      public void onSubscriptionData(SubscriptionData data) {
+        dispatcher.add(data.getChannel());
+      }
+    };
+    SubscriptionConfig config = new SubscriptionConfig(SubscriptionMode.SIMPLE, listener).setPrefix(true);
+    client.createSubscription(channel, config);
+
+    assertThat(getEvent(), equalTo("enter-subscribed"));
+
+    client.publish(channel + "animal", "message1", Ack.NO);
+    client.publish(channel + "anotherChannel", "message1", Ack.NO);
+    assertThat(getEvent(), equalTo(channel + "animal"));
+    assertThat(getEvent(), equalTo(channel + "anotherChannel"));
+
+    client.stop();
+  }
+
   public static class MyCustomBody {
     String fieldA;
     String fieldB;

@@ -57,7 +57,6 @@ public class SubscribeRequest {
   public SubscribeRequest(String channel, String position) {
     this.channel = channel;
     this.position = position;
-    this.prefix = false;
   }
 
   public String getChannel() {

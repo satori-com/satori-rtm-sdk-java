@@ -28,15 +28,17 @@ public class SubscriptionData {
   private final String subscription_id;
   private final String position;
   private final List<AnyJson> messages;
+  private final String channel;
 
   public SubscriptionData() {
-    this(null, null, null);
+    this(null, null, null, null);
   }
 
-  public SubscriptionData(String id, String position, List<AnyJson> messages) {
+  public SubscriptionData(String id, String position, List<AnyJson> messages, String channel) {
     this.subscription_id = id;
     this.position = position;
     this.messages = messages;
+    this.channel = channel;
   }
 
   /**
@@ -46,6 +48,15 @@ public class SubscriptionData {
    **/
   public String getSubscriptionId() {
     return subscription_id;
+  }
+
+  /**
+   * Returns the channel to which the messages are published (if using "prefix" subscription).
+   *
+   * @return Channel name.
+   **/
+  public String getChannel() {
+    return channel;
   }
 
   /**

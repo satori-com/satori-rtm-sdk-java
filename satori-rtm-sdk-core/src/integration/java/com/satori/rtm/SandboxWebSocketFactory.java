@@ -118,7 +118,7 @@ class SandboxWebSocketFactory extends AbstractTransportFactory {
 
         if (rawData.contains("create_alien")) {
           SubscriptionData subscriptionData =
-              new SubscriptionData("channel", "next", Collections.<AnyJson>emptyList());
+              new SubscriptionData("channel", "next", Collections.<AnyJson>emptyList(), null);
           Pdu<SubscriptionData> pdu = new Pdu<SubscriptionData>("rtm/subscription/data",
               subscriptionData, "rid");
           mTransportListener.onMessage(mSerializer.toJson(pdu));

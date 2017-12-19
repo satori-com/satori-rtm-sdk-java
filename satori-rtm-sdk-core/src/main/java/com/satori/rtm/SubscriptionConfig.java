@@ -167,11 +167,11 @@ public class SubscriptionConfig {
   protected SubscribeRequest createSubscribeRequest(String subscriptionId) {
     SubscribeRequest request = new SubscribeRequest();
     Boolean emptyFilter = Strings.isNullOrEmpty(mSubscribeRequest.getFilter());
-    Boolean prefixSubscription = mSubscribeRequest.getPrefix();
-    if (emptyFilter || prefixSubscription) {
+    Boolean prefixSubscription =  mSubscribeRequest.getPrefix();
+    if (emptyFilter || prefixSubscription != null && prefixSubscription) {
       request.setChannel(subscriptionId);
     }
-    if (!emptyFilter || prefixSubscription) {
+    if (!emptyFilter || prefixSubscription != null && prefixSubscription) {
       request.setSubscriptionId(subscriptionId);
     }
     request.setPosition(mSubscribeRequest.getPosition());
