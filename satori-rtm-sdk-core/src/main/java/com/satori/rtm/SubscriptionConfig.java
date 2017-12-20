@@ -124,6 +124,19 @@ public class SubscriptionConfig {
   }
 
   /**
+   * Determines if this is a prefix subscription, i.e. subscribing to all channels that match the prefix
+   * specified by "channel". Default value for prefix is false. In future if a new channel is created that
+   * matches the prefix then client will be automatically subscribed to this new channel.
+   *
+   * @param prefix specify prefix option
+   * @return the current {@code SubscriptionConfig} object
+   */
+  public SubscriptionConfig setPrefix(Boolean prefix) {
+    mSubscribeRequest.setPrefix(prefix);
+    return this;
+  }
+
+  /**
    * Sets the period of time, in seconds, that RTM runs the streamfilter on the channel before it
    * sends the result to the RTM client.
    * See the chapter "Views (formerly filters)" in the <em>Satori Docs</em> for more information
@@ -153,9 +166,12 @@ public class SubscriptionConfig {
    */
   protected SubscribeRequest createSubscribeRequest(String subscriptionId) {
     SubscribeRequest request = new SubscribeRequest();
-    if (Strings.isNullOrEmpty(mSubscribeRequest.getFilter())) {
+    Boolean emptyFilter = Strings.isNullOrEmpty(mSubscribeRequest.getFilter());
+    Boolean prefixSubscription =  mSubscribeRequest.getPrefix();
+    if (emptyFilter || prefixSubscription != null && prefixSubscription) {
       request.setChannel(subscriptionId);
-    } else {
+    }
+    if (!emptyFilter || prefixSubscription != null && prefixSubscription) {
       request.setSubscriptionId(subscriptionId);
     }
     request.setPosition(mSubscribeRequest.getPosition());
@@ -164,6 +180,7 @@ public class SubscriptionConfig {
     request.setFilter(mSubscribeRequest.getFilter());
     request.setPeriod(mSubscribeRequest.getPeriod());
     request.setOnly(mSubscribeRequest.getOnly());
+    request.setPrefix(mSubscribeRequest.getPrefix());
     return request;
   }
 

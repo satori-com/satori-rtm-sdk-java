@@ -50,6 +50,7 @@ public class SubscribeRequest {
   private String filter;
   private Integer period;
   private String only;
+  private Boolean prefix;
 
   public SubscribeRequest() { }
 
@@ -120,6 +121,14 @@ public class SubscribeRequest {
 
   public void setOnly(String only) {
     this.only = only;
+  }
+
+  public Boolean getPrefix() {
+    return prefix;
+  }
+
+  public void setPrefix(Boolean prefix) {
+    this.prefix = prefix;
   }
 
   static public class History {

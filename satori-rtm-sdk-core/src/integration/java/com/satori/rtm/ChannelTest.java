@@ -702,6 +702,57 @@ public class ChannelTest extends AbstractRealTest {
     client.stop();
   }
 
+  @Test
+  public void prefixSubscription() throws InterruptedException {
+    RtmClient client = clientBuilder().build();
+    client.start();
+    SubscriptionConfig config =
+            new SubscriptionConfig(SubscriptionMode.SIMPLE, logSubscriptionListener(
+                    SubscriptionListenerType.SUBSCRIBED,
+                    SubscriptionListenerType.SUBSCRIPTION_DATA
+            )).setPrefix(true);
+    client.createSubscription(channel + "ani", config);
+
+    assertThat(getEvent(), equalTo("on-enter-subscribed"));
+
+    client.publish(channel + "animal", "message1", Ack.NO);
+    assertThat(getEvent(), equalTo("message1"));
+
+    client.publish(channel + "anime", "message2", Ack.NO);
+    assertThat(getEvent(), equalTo("message2"));
+
+    client.stop();
+  }
+
+  @Test
+  public void prefixSubscriptionDataChannel() throws InterruptedException {
+    RtmClient client = clientBuilder().build();
+    client.start();
+    SubscriptionAdapter listener = new SubscriptionAdapter() {
+      @Override
+      public void onEnterSubscribed(SubscribeRequest request, SubscribeReply reply) {
+        dispatcher.add("enter-subscribed");
+      }
+
+      @Override
+      public void onSubscriptionData(SubscriptionData data) {
+        dispatcher.add(data.getChannel());
+      }
+    };
+    SubscriptionConfig config = new SubscriptionConfig(SubscriptionMode.SIMPLE, listener).setPrefix(true);
+    client.createSubscription(channel, config);
+
+    assertThat(getEvent(), equalTo("enter-subscribed"));
+
+    client.publish(channel + "animal", "message1", Ack.NO);
+    assertThat(getEvent(), equalTo(channel + "animal"));
+
+    client.publish(channel + "anotherChannel", "message1", Ack.NO);
+    assertThat(getEvent(), equalTo(channel + "anotherChannel"));
+
+    client.stop();
+  }
+
   public static class MyCustomBody {
     String fieldA;
     String fieldB;
