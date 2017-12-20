@@ -716,9 +716,9 @@ public class ChannelTest extends AbstractRealTest {
     assertThat(getEvent(), equalTo("on-enter-subscribed"));
 
     client.publish(channel + "animal", "message1", Ack.NO);
-    client.publish(channel + "anime", "message2", Ack.NO);
-
     assertThat(getEvent(), equalTo("message1"));
+
+    client.publish(channel + "anime", "message2", Ack.NO);
     assertThat(getEvent(), equalTo("message2"));
 
     client.stop();
@@ -745,8 +745,9 @@ public class ChannelTest extends AbstractRealTest {
     assertThat(getEvent(), equalTo("enter-subscribed"));
 
     client.publish(channel + "animal", "message1", Ack.NO);
-    client.publish(channel + "anotherChannel", "message1", Ack.NO);
     assertThat(getEvent(), equalTo(channel + "animal"));
+
+    client.publish(channel + "anotherChannel", "message1", Ack.NO);
     assertThat(getEvent(), equalTo(channel + "anotherChannel"));
 
     client.stop();
