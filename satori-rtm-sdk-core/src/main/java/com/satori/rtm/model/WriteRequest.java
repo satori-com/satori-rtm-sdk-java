@@ -23,6 +23,7 @@ public class WriteRequest<T> {
   private T message;
   private String position;
   private Long ttl;
+  //TODO: Use separate generic type for the TTL message, in case message types are different.
   private T ttl_message;
 
   public WriteRequest() { }
@@ -38,8 +39,9 @@ public class WriteRequest<T> {
   }
 
 
+
   public WriteRequest(String channel, T message, String position, final long ttl, final T ttl_message) {
-    Preconditions.checkArgument(ttl > 0, "ttl must be non negative");
+    Preconditions.checkArgument(ttl > 0, String.format("ttl must be non negative: %s", ttl));
     this.channel = channel;
     this.message = message;
     this.position = position;
@@ -59,7 +61,7 @@ public class WriteRequest<T> {
     return position;
   }
 
-  public long getTtl() {
+  public Long getTtl() {
     return ttl;
   }
 
