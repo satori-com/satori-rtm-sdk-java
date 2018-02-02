@@ -193,6 +193,20 @@ public interface RtmClient {
    * client isn't authorized to publish to the specified channel.</li>
    * <li>{@link TransportException}: a WebSocket transport error occurred.</li>
    * </ul>
+
+   * For example:
+   * <pre>
+   *  String myMessage = "{\"message\": \"Hello\"}";
+   *  ListenableFuture<Pdu<PublishReply>> publish("my_channel", myMessage, Ack.YES);
+   *  Futures.addCallback(reply, new FutureCallback<Pdu<PublishReply>>() {
+   *      public void onSuccess(Pdu<PublishReply> publishReplyPdu) {
+   *         System.out.println("Animal is published: " + animal);
+   *      }
+   *      public void onFailure(Throwable t) {
+   *         System.out.println("Publish request failed: " + t.getMessage());
+   *      }
+   *  });
+   * </pre>
    *
    * @param channel name of the channel
    * @param message message to publish
@@ -203,10 +217,29 @@ public interface RtmClient {
   <T> ListenableFuture<Pdu<PublishReply>> publish(final String channel, final T message, final Ack ack);
 
   /**
-   * Publishes a message to a channel asynchronously.
+   * Publishes a {@link PublishRequest} asynchronously. This form of {@code publish} lets you
+   * specify "time to live" (<strong>ttl</strong>) parameters. See the
+   * {@link PublishRequest#PublishRequest(String, Object, long, Object) PublishRequest.PublishRequest(channel, message, ttl, ttl_message)}
+   * constructor.
    * <p>
+   * For example:
+   * <pre>
+   *  String myMessage = "{\"message\": \"Hello\"}";
+   *  PublishRequest<String> pRequest =
+   *      new PublishRequest<String>("my_channel", myMessage, 15, "Dead");
+   *  ListenableFuture<Pdu<PublishReply>> publish(pRequest, Ack.YES);
+   *  Futures.addCallback(reply, new FutureCallback<Pdu<PublishReply>>() {
+   *      public void onSuccess(Pdu<PublishReply> publishReplyPdu) {
+   *         System.out.println("Animal is published: " + animal);
+   *      }
+   *      public void onFailure(Throwable t) {
+   *         System.out.println("Publish request failed: " + t.getMessage());
+   *      }
+   *  });
+   * </pre>
    * To get the response returned by RTM, call {@link ListenableFuture#get}, or pass
-   * {@code ListenableFuture} to {@link com.google.common.util.concurrent.Futures#addCallback} to set up a callback.
+   * {@code ListenableFuture} to {@link com.google.common.util.concurrent.Futures#addCallback} to
+   * set up a callback.
    * <p>
    * If the publish operation fails, then the exception is passed to the {@link ListenableFuture}
    * object:
