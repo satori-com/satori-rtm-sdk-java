@@ -7,9 +7,13 @@ import static org.hamcrest.Matchers.startsWith;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.satori.rtm.model.Pdu;
 import com.satori.rtm.model.PublishReply;
+import com.satori.rtm.model.PublishRequest;
+import com.satori.rtm.model.ReadReply;
 import com.satori.rtm.model.SubscribeReply;
 import com.satori.rtm.model.SubscribeRequest;
 import com.satori.rtm.model.SubscriptionData;
+import com.satori.rtm.model.WriteReply;
+import com.satori.rtm.model.WriteRequest;
 import org.junit.Test;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -356,4 +360,58 @@ public class RtmClientTest extends AbstractRealTest {
     assertThat(getEvent(), equalTo("d-0-message"));
     client.stop();
   }
+
+  @Test
+  public void testTtl() throws Exception {
+    RtmClient client = clientBuilder()
+        .setListener(logClientListener(ClientListenerType.CONNECTED))
+        .build();
+    client.start();
+    assertThat(getEvent(), equalTo("on-enter-connected"));
+
+    {
+      final PublishRequest<String> request = new PublishRequest(channel, "normal", 1, "expired");
+      final Pdu<PublishReply> publishReply = awaitFuture(client.publish(request, Ack.YES));
+      assertThat(publishReply.isOkOutcome(), equalTo(true));
+    }
+
+    {
+      final Pdu<ReadReply> response = awaitFuture(client.read(channel));
+      assertThat(response.isOkOutcome(), equalTo(true));
+      assertThat(response.getBody().getMessage().convertToType(String.class), equalTo("normal"));
+    }
+
+    Thread.sleep(2000);
+
+    final Pdu<ReadReply> lastResponse = awaitFuture(client.read(channel));
+    assertThat(lastResponse.isOkOutcome(), equalTo(true));
+    assertThat(lastResponse.getBody().getMessage().convertToType(String.class), equalTo("expired"));
+
+    // test write
+    {
+      final WriteRequest<String> writeRequest = new WriteRequest(channel, "normal",
+          lastResponse.getBody().getPosition(), 1, "expired");
+      final Pdu<WriteReply> writeReply = awaitFuture(client.write(writeRequest, Ack.YES));
+
+      assertThat(writeReply.isOkOutcome(), equalTo(true));
+    }
+
+    {
+      final Pdu<ReadReply> response = awaitFuture(client.read(channel));
+      assertThat(response.isOkOutcome(), equalTo(true));
+      assertThat(response.getBody().getMessage().convertToType(String.class), equalTo("normal"));
+    }
+
+    Thread.sleep(2000);
+
+    {
+      final Pdu<ReadReply> response = awaitFuture(client.read(channel));
+      assertThat(response.isOkOutcome(), equalTo(true));
+      assertThat(response.getBody().getMessage().convertToType(String.class), equalTo("expired"));
+    }
+
+    client.stop();
+  }
+
+
 }

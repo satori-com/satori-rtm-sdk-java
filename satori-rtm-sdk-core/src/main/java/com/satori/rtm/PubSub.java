@@ -87,11 +87,19 @@ class PubSub {
     mSubscriptions.remove(subscriptionId);
   }
 
+  /**
+   * @deprecated  Use {@link PubSub#publish(PublishRequest, Ack)}
+   */
+  @Deprecated
   public <T> ListenableFuture<Pdu<PublishReply>> publish(final String channel,
-                                                         final T message,
-                                                         Ack ack) {
-    PublishRequest<T> publishRequest = new PublishRequest<T>(channel, message);
-    return mRtmService.send("rtm/publish", publishRequest, ack, PublishReply.class);
+      final T message,
+      final Ack ack) {
+    final PublishRequest<T> publishRequest = new PublishRequest<T>(channel, message);
+    return publish(publishRequest, ack);
+  }
+
+  public <T> ListenableFuture<Pdu<PublishReply>> publish(final PublishRequest<T> request, final Ack ack) {
+    return mRtmService.send("rtm/publish", request, ack, PublishReply.class);
   }
 
   void onUnsolicitedPDU(PduRaw unsolicitedPdu) {
