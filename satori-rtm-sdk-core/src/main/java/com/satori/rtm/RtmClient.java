@@ -6,6 +6,7 @@ import com.satori.rtm.model.DeleteReply;
 import com.satori.rtm.model.Pdu;
 import com.satori.rtm.model.PduException;
 import com.satori.rtm.model.PublishReply;
+import com.satori.rtm.model.PublishRequest;
 import com.satori.rtm.model.ReadReply;
 import com.satori.rtm.model.ReadRequest;
 import com.satori.rtm.model.WriteReply;
@@ -199,7 +200,47 @@ public interface RtmClient {
    * @param <T>     type of the {@code message} parameter
    * @return a {@link PublishReply}
    */
-  <T> ListenableFuture<Pdu<PublishReply>> publish(String channel, T message, Ack ack);
+  <T> ListenableFuture<Pdu<PublishReply>> publish(final String channel, final T message, final Ack ack);
+
+  /**
+   * Publishes a message to a channel asynchronously.
+   * <p>
+   * To get the response returned by RTM, call {@link ListenableFuture#get}, or pass
+   * {@code ListenableFuture} to {@link com.google.common.util.concurrent.Futures#addCallback} to set up a callback.
+   * <p>
+   * If the publish operation fails, then the exception is passed to the {@link ListenableFuture}
+   * object:
+   * <ul>
+   * <li>
+   * If you call {@link ListenableFuture#get() ListenableFuture.get()} to get the result,
+   * it throws an
+   * {@link java.util.concurrent.ExecutionException} and passes the original exception to it.
+   * </li>
+   * <li>
+   * If you call
+   * {@link com.google.common.util.concurrent.Futures#addCallback Futures.addCallback()} to
+   * get the result,
+   * the exception is passed to
+   * {@link com.google.common.util.concurrent.FutureCallback#onFailure FutureCallback.onFailure()}
+   * unaltered.
+   * </li>
+   * </ul>
+   * <p>
+   * The publish operation can fail with the following execution exceptions:
+   * <ul>
+   * <li>{@link IllegalStateException}: RTM SDK failed to add the message to the pending queue
+   * because the queue is full.</li>
+   * <li>{@link PduException}: an RTM error occured. For example, this exception is thrown if the
+   * client isn't authorized to publish to the specified channel.</li>
+   * <li>{@link TransportException}: a WebSocket transport error occurred.</li>
+   * </ul>
+   *
+   * @param request     publish request
+   * @param ack         determines if RTM should acknowledge the publish operation
+   * @param <T>         type of the message parameters
+   * @return a {@link PublishReply}
+   */
+  <T> ListenableFuture<Pdu<PublishReply>> publish(PublishRequest<T> request, Ack ack);
 
   /**
    * Gets the current {@link Connection}.

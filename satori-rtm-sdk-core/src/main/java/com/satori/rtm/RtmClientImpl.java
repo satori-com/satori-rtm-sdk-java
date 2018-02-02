@@ -13,6 +13,7 @@ import com.satori.rtm.model.DeleteRequest;
 import com.satori.rtm.model.Pdu;
 import com.satori.rtm.model.PduRaw;
 import com.satori.rtm.model.PublishReply;
+import com.satori.rtm.model.PublishRequest;
 import com.satori.rtm.model.ReadReply;
 import com.satori.rtm.model.ReadRequest;
 import com.satori.rtm.model.SystemWideException;
@@ -111,8 +112,14 @@ class RtmClientImpl implements RtmClient {
 
   @Override
   public <T> ListenableFuture<Pdu<PublishReply>> publish(final String channel, final T message,
-                                                         Ack ack) {
-    return mRtmService.getPubSub().publish(channel, message, ack);
+                                                         final Ack ack) {
+    final PublishRequest<T> publishRequest = new PublishRequest<T>(channel, message);
+    return publish(publishRequest, ack);
+  }
+
+  @Override
+  public <T> ListenableFuture<Pdu<PublishReply>> publish(final PublishRequest<T> request, final Ack ack) {
+    return mRtmService.getPubSub().publish(request, ack);
   }
 
 
