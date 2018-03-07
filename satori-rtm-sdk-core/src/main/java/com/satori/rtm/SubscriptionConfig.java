@@ -143,6 +143,7 @@ public class SubscriptionConfig {
    *
    * @param start start of history: timestamp or position
    * @param end stop of history: timestamp or position
+   * @param mode mode of history retrieval; timestamp or position.
    * @return the current {@code SubscriptionConfig} object
    */
   public SubscriptionConfig setPersistenceWindow(String start, String end,
