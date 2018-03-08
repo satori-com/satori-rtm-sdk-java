@@ -4,12 +4,14 @@ import com.google.common.base.Strings;
 import com.satori.rtm.model.SubscribeRequest;
 import com.satori.rtm.model.SubscriptionError;
 import com.satori.rtm.utils.TryCatchProxy;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 /**
  * Provides settings that configure a subscription.
  */
 public class SubscriptionConfig {
+
   final private SubscribeRequest mSubscribeRequest;
   final private EnumSet<SubscriptionMode> mSubscriptionModes;
   final private SubscriptionListener mUserListeners;
@@ -17,7 +19,7 @@ public class SubscriptionConfig {
   /**
    * Creates a subscription configuration with a set of subscription modes and a subscription listener.
    *
-   * @param modes    subscription modes
+   * @param modes subscription modes
    * @param listener subscription listener
    */
   public SubscriptionConfig(EnumSet<SubscriptionMode> modes, SubscriptionListener listener) {
@@ -137,6 +139,28 @@ public class SubscriptionConfig {
   }
 
   /**
+   * Sets persistence history window
+   *
+   * @param start start of history: timestamp or position
+   * @param end stop of history: timestamp or position
+   * @param mode mode of history retrieval; timestamp or position.
+   * @return the current {@code SubscriptionConfig} object
+   */
+  public SubscriptionConfig setPersistenceWindow(String start, String end,
+      PersistenceHistoryMode mode) {
+    if (mode == PersistenceHistoryMode.POSITIONS) {
+      mSubscribeRequest.setPosition(start);
+      mSubscribeRequest.setEndPosition(end);
+      mSubscribeRequest.setWith(Arrays.asList("positions"));
+    } else if (mode == PersistenceHistoryMode.TIMESTAMPS) {
+      mSubscribeRequest.setTimestamp(Long.valueOf(start));
+      mSubscribeRequest.setEndTimestamp(Long.valueOf(end));
+      mSubscribeRequest.setWith(Arrays.asList("timestamps"));
+    }
+    return this;
+  }
+
+  /**
    * Sets the period of time, in seconds, that RTM runs the streamfilter on the channel before it
    * sends the result to the RTM client.
    * See the chapter "Views (formerly filters)" in the <em>Satori Docs</em> for more information
@@ -167,7 +191,7 @@ public class SubscriptionConfig {
   protected SubscribeRequest createSubscribeRequest(String subscriptionId) {
     SubscribeRequest request = new SubscribeRequest();
     Boolean emptyFilter = Strings.isNullOrEmpty(mSubscribeRequest.getFilter());
-    Boolean prefixSubscription =  mSubscribeRequest.getPrefix();
+    Boolean prefixSubscription = mSubscribeRequest.getPrefix();
     if (emptyFilter || prefixSubscription != null && prefixSubscription) {
       request.setChannel(subscriptionId);
     }
@@ -175,12 +199,16 @@ public class SubscriptionConfig {
       request.setSubscriptionId(subscriptionId);
     }
     request.setPosition(mSubscribeRequest.getPosition());
+    request.setEndPosition(mSubscribeRequest.getEndPosition());
     request.setHistory(mSubscribeRequest.getHistory());
     request.setFastForward(mSubscriptionModes.contains(SubscriptionMode.FAST_FORWARD));
     request.setFilter(mSubscribeRequest.getFilter());
     request.setPeriod(mSubscribeRequest.getPeriod());
     request.setOnly(mSubscribeRequest.getOnly());
     request.setPrefix(mSubscribeRequest.getPrefix());
+    request.setTimestamp(mSubscribeRequest.getTimestamp());
+    request.setEndTimestamp(mSubscribeRequest.getEndTimestamp());
+    request.setWith(mSubscribeRequest.getWith());
     return request;
   }
 

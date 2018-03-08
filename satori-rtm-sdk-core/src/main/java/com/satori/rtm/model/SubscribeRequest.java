@@ -1,5 +1,7 @@
 package com.satori.rtm.model;
 
+import java.util.List;
+
 /**
  * Represents the body of a Protocol Data Unit (<strong>PDU</strong>) for a subscribe request.
  * <p>
@@ -45,18 +47,54 @@ public class SubscribeRequest {
   private String channel;
   private String subscription_id;
   private String position;
+  private String end_position;
   private History history;
   private Boolean fast_forward;
   private String filter;
   private Integer period;
   private String only;
   private Boolean prefix;
+  private List<String> with;
+  private Long timestamp;
+  private Long end_timestamp;
 
   public SubscribeRequest() { }
 
   public SubscribeRequest(String channel, String position) {
     this.channel = channel;
     this.position = position;
+  }
+
+  public String getEndPosition() {
+    return end_position;
+  }
+
+  public void setEndPosition(String endPosition) {
+    this.end_position = endPosition;
+  }
+
+  public List<String> getWith() {
+    return with;
+  }
+
+  public void setWith(List<String> with) {
+    this.with = with;
+  }
+
+  public Long getTimestamp() {
+    return timestamp;
+  }
+
+  public void setTimestamp(Long timestamp) {
+    this.timestamp = timestamp;
+  }
+
+  public Long getEndTimestamp() {
+    return end_timestamp;
+  }
+
+  public void setEndTimestamp(Long endTimestamp) {
+    this.end_timestamp = endTimestamp;
   }
 
   public String getChannel() {
