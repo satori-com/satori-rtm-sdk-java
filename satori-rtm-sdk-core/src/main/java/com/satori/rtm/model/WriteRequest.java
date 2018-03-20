@@ -1,6 +1,7 @@
 package com.satori.rtm.model;
 
 import com.google.common.base.Preconditions;
+import com.satori.rtm.RequestReturnMode;
 
 /**
  * Represents the body of a Protocol Data Unit (<strong>PDU</strong>) for a write request.
@@ -26,10 +27,12 @@ public class WriteRequest<T> {
   //TODO: Use separate generic type for the TTL message, in case message types are different.
   private T ttl_message;
 
+  private String _return_;
+
   public WriteRequest() { }
 
   public WriteRequest(String channel, T message) {
-    this(channel, message, null);
+    this(channel, message, null, null);
   }
 
   public WriteRequest(String channel, T message, String position) {
@@ -38,7 +41,12 @@ public class WriteRequest<T> {
     this.position = position;
   }
 
-
+  public WriteRequest(String channel, T message, String position, RequestReturnMode returnMode) {
+    this.channel = channel;
+    this.message = message;
+    this.position = position;
+    this._return_ = returnMode.toString();
+  }
 
   public WriteRequest(String channel, T message, String position, final long ttl, final T ttl_message) {
     Preconditions.checkArgument(ttl > 0, String.format("ttl must be non negative: %s", ttl));
@@ -47,6 +55,16 @@ public class WriteRequest<T> {
     this.position = position;
     this.ttl = ttl;
     this.ttl_message = ttl_message;
+  }
+
+  public WriteRequest(String channel, T message, String position, final long ttl, final T ttl_message, final RequestReturnMode returnMode) {
+    Preconditions.checkArgument(ttl > 0, String.format("ttl must be non negative: %s", ttl));
+    this.channel = channel;
+    this.message = message;
+    this.position = position;
+    this.ttl = ttl;
+    this.ttl_message = ttl_message;
+    this._return_ = returnMode.toString();
   }
 
   public String getChannel() {
@@ -71,6 +89,10 @@ public class WriteRequest<T> {
 
   public WriteRequest<T> withTtl(final long newTtl, final T newTtlMessage) {
     return new WriteRequest<T>(channel, message, position, newTtl, newTtlMessage);
+  }
+
+  public WriteRequest<T> withRequestReturn(final long newTtl, final RequestReturnMode returnMode) {
+    return new WriteRequest<T>(channel, message, position, returnMode);
   }
 
   @Override

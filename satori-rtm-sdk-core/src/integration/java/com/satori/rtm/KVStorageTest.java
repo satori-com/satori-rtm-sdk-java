@@ -1,5 +1,8 @@
 package com.satori.rtm;
 
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertNull;
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -7,26 +10,111 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.satori.rtm.model.DeleteReply;
+import com.satori.rtm.model.DeleteRequest;
 import com.satori.rtm.model.Pdu;
 import com.satori.rtm.model.PduException;
+import com.satori.rtm.model.PublishReply;
+import com.satori.rtm.model.PublishRequest;
 import com.satori.rtm.model.ReadReply;
 import com.satori.rtm.model.WriteReply;
 import com.satori.rtm.model.WriteRequest;
+import java.util.Arrays;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import java.util.concurrent.ExecutionException;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
-@RunWith(JUnit4.class)
+@RunWith(Parameterized.class)
 public class KVStorageTest extends AbstractRealTest {
+  @Parameters
+  public static Iterable<? extends Object> requestReturnModes(){
+    return Arrays.asList(RequestReturnMode.values());
+  }
+
+  private RequestReturnMode requestReturnMode;
+  public KVStorageTest(RequestReturnMode returnMode){
+    requestReturnMode = returnMode;
+  }
+
   @Test
-  public void readAfterPublish() throws ExecutionException, InterruptedException {
+  public void readAfterPublish() throws ExecutionException {
     RtmClient client = clientBuilder().build();
     client.start();
 
     awaitFuture(client.publish(channel, "message", Ack.YES));
     Pdu<ReadReply> pdu = awaitFuture(client.read(channel));
     assertThat(pdu.getBody().getMessageAsType(String.class), equalTo("message"));
+    client.stop();
+  }
+
+  @Test
+  public void publishResponseOK() throws ExecutionException {
+    final String message = UUID.randomUUID().toString();
+    final RtmClient client = clientBuilder().build();
+    client.start();
+    final PublishRequest<String> publishRequest = new PublishRequest<String>(channel, message, requestReturnMode);
+    awaitFuture(client.publish(publishRequest, Ack.YES));
+    final Pdu<PublishReply> replyPdu = awaitFuture(client.publish(publishRequest, Ack.YES));
+    final PublishReply publishReply = replyPdu.getBody();
+    if (RequestReturnMode.PREVIOUS_VALUE_ON_OK.equals(requestReturnMode) || RequestReturnMode.PREVIOUS_VALUE.equals(requestReturnMode)) {
+      assertNotNull(publishReply.getPrevious().getMessage());
+      assertTrue(publishReply.getPrevious().getMessage().toString().equals(message));
+    } else {
+      assertNull(publishReply.getPrevious());
+    }
+    Pdu<ReadReply> pdu = awaitFuture(client.read(channel));
+    assertThat(pdu.getBody().getMessageAsType(String.class), equalTo(message));
+    client.stop();
+  }
+
+  @Test
+  public void casResponseOK() throws ExecutionException {
+    final String position = null;
+    final String message = UUID.randomUUID().toString();
+    final RtmClient client = clientBuilder().build();
+    client.start();
+    Pdu<WriteReply> replyPdu = awaitFuture(client.write(new WriteRequest<String>(channel, message, position, requestReturnMode), Ack.YES));
+    final String newPosition = replyPdu.getBody().getPosition();
+    replyPdu = awaitFuture(client.write(new WriteRequest<String>(channel, message, newPosition, requestReturnMode), Ack.YES));
+    final WriteReply writeReply = replyPdu.getBody();
+    if (RequestReturnMode.PREVIOUS_VALUE_ON_OK.equals(requestReturnMode) || RequestReturnMode.PREVIOUS_VALUE.equals(requestReturnMode)) {
+      assertNotNull(writeReply.getPrevious().getMessage());
+      assertTrue(writeReply.getPrevious().getMessage().toString().equals(message));
+    } else {
+      assertNull(writeReply.getPrevious());
+    }
+    Pdu<ReadReply> pdu = awaitFuture(client.read(channel));
+    assertThat(pdu.getBody().getMessageAsType(String.class), equalTo(message));
+    client.stop();
+  }
+
+  @Test
+  public void casResponseError() throws ExecutionException {
+    final String position = null;
+    final String message = UUID.randomUUID().toString();
+    final RtmClient client = clientBuilder().build();
+    client.start();
+    Pdu<WriteReply> replyPdu = awaitFuture(client.write(new WriteRequest<String>(channel, message, position, requestReturnMode), Ack.YES));
+    final String newPosition = replyPdu.getBody().getPosition().replace(":0", ":1");
+    try {
+      replyPdu = awaitFuture(client
+          .write(new WriteRequest<String>(channel, message, newPosition, requestReturnMode),
+              Ack.YES));
+    } catch (ExecutionException ex) {
+      assertTrue(ex.getMessage().contains(PduException.class.getSimpleName()));
+    }
+    final WriteReply writeReply = replyPdu.getBody();
+    if (RequestReturnMode.PREVIOUS_VALUE_ON_ERROR.equals(requestReturnMode) || RequestReturnMode.PREVIOUS_VALUE.equals(requestReturnMode)) {
+      assertNotNull(writeReply.getPrevious().getMessage());
+      assertTrue(writeReply.getPrevious().getMessage().toString().equals(message));
+    } else {
+      assertNull(writeReply.getPrevious());
+    }
+    Pdu<ReadReply> pdu = awaitFuture(client.read(channel));
+    assertThat(pdu.getBody().getMessageAsType(String.class), equalTo(message));
     client.stop();
   }
 
@@ -87,4 +175,28 @@ public class KVStorageTest extends AbstractRealTest {
 
     client.stop();
   }
+
+  @Test
+  public void deleteResponseOK() throws ExecutionException {
+    final String position = null;
+    final String message1 = UUID.randomUUID().toString();
+    final String message2 = UUID.randomUUID().toString();
+    final RtmClient client = clientBuilder().build();
+    client.start();
+    awaitFuture(client.write(new WriteRequest<String>(channel, message1, position), Ack.YES));
+    awaitFuture(client.write(new WriteRequest<String>(channel, message2, position), Ack.YES));
+    final Pdu<DeleteReply> deleteReplyPdu = awaitFuture(client.delete(new DeleteRequest(channel, requestReturnMode), Ack.YES));
+    final DeleteReply deleteReply = deleteReplyPdu.getBody();
+    if (RequestReturnMode.PREVIOUS_VALUE_ON_OK.equals(requestReturnMode) || RequestReturnMode.PREVIOUS_VALUE.equals(requestReturnMode)) {
+      assertNotNull(deleteReply.getPrevious().getMessage());
+      assertTrue(deleteReply.getPrevious().getMessage().toString().equals(message2));
+    } else {
+      assertNull(deleteReply.getPrevious());
+    }
+    final Pdu<ReadReply> pdu = awaitFuture(client.read(channel));
+    assertThat(pdu.getBody().getMessageAsType(String.class), equalTo(null));
+    client.stop();
+  }
+
+
 }

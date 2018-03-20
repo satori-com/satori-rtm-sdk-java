@@ -11,6 +11,7 @@ import com.satori.rtm.model.ReadReply;
 import com.satori.rtm.model.ReadRequest;
 import com.satori.rtm.model.WriteReply;
 import com.satori.rtm.model.WriteRequest;
+import com.satori.rtm.model.DeleteRequest;
 import com.satori.rtm.transport.TransportException;
 import java.util.EnumSet;
 
@@ -347,4 +348,17 @@ public interface RtmClient {
    * @return asynchronous result of the delete request
    */
   ListenableFuture<Pdu<DeleteReply>> delete(String key, Ack ack);
+
+  /**
+   * Writes the specified key-value pair to a key-value store. The operation is asynchronous.
+   * <p>
+   * The documentation for {@link #publish(String, Object, Ack) publish()} describes how to get
+   * the method response, and how to handle errors.
+   *
+   * @param deleteRequest write request
+   * @param ack          determines if RTM should acknowledge the write operation
+   * @param <T>          type of serializable message
+   * @return asynchronous result of the write request
+   */
+  <T> ListenableFuture<Pdu<DeleteReply>> delete(DeleteRequest deleteRequest, Ack ack);
 }

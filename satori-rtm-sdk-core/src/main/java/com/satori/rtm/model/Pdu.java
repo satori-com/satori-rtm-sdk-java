@@ -91,6 +91,17 @@ public class Pdu<TBody> {
     return action.equals("/error");
   }
 
+
+  /**
+   * Returns {@code true} if the PDU is a write error from RTM and {@code false}
+   * otherwise. This type of error usually indicates a position error with the write request.
+   *
+   * @return returns {@code true} if the PDU is a write error, otherwise {@code false}.
+   */
+  public boolean isWriteError() {
+    return action.equals("rtm/write/error");
+  }
+
   /**
    * Returns {@code true} if the PDU is a positive response to a request
    * sent by the application, and {@code false} otherwise. The {@code action} element of a positive
@@ -113,6 +124,15 @@ public class Pdu<TBody> {
     return action.endsWith("/error");
   }
 
+  /**
+   * Returns {@code true} if the PDU is a chunk response sent by the application,
+   * and {@code false} otherwise.
+   *
+   * @return returns {@code true} if the PDU is a chunk response, otherwise {@code false}.
+   */
+  public boolean isChunkResponse() {
+    return action.endsWith("/data");
+  }
 
   @Override
   public String toString() {

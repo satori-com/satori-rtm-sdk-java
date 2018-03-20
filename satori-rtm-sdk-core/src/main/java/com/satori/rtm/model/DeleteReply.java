@@ -17,7 +17,13 @@ package com.satori.rtm.model;
 public class DeleteReply {
   private String position;
 
+  private PreviousMessage previous;
+
   public DeleteReply() {
+  }
+
+  public PreviousMessage getPrevious() {
+    return previous;
   }
 
   public String getPosition() {

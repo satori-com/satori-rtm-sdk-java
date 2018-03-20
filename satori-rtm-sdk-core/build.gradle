@@ -56,5 +56,7 @@ dependencies {
     // needs to compile integration tests for Eclipse
     testCompile group: 'com.google.code.gson', name: 'gson', version: '2.8.0'
     // needed to run tests from IDE
-    integrationCompile project(path: ':satori-rtm-sdk-gson')
+    integrationCompile project(path: ':satori-rtm-sdk-jackson2')
+//TODO: We need to test it with both.
+//    integrationCompile project(path: ':satori-rtm-sdk-gson')
 }

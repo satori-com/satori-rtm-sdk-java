@@ -15,9 +15,16 @@ package com.satori.rtm.model;
  * </pre>
  */
 public class WriteReply {
+
   private String position;
 
+  private PreviousMessage previous;
+
   public WriteReply() {
+  }
+
+  public PreviousMessage getPrevious() {
+    return previous;
   }
 
   public String getPosition() {
