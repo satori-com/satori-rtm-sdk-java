@@ -34,7 +34,7 @@ public class DeleteRequest {
   public DeleteRequest(String channel, Boolean purge, RequestReturnMode returnMode) {
     this.channel = channel;
     this.purge = purge;
-    this.read = returnMode.toString();
+    this.read =  returnMode == null ? null : returnMode.toString();
   }
 
   public String getChannel() {

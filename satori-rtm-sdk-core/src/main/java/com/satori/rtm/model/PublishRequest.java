@@ -55,7 +55,7 @@ public class PublishRequest<T> {
   public PublishRequest(String channel, T message, RequestReturnMode returnMode) {
     this.channel = channel;
     this.message = message;
-    this.read = returnMode.toString();
+    this.read =  returnMode == null ? null : returnMode.toString();
   }
 
   /**
@@ -99,7 +99,7 @@ public class PublishRequest<T> {
     this.message = message;
     this.ttl = ttl;
     this.ttl_message = ttl_message;
-    this.read = returnMode.toString();
+    this.read =  returnMode == null ? null : returnMode.toString();
   }
 
   public String getChannel() {

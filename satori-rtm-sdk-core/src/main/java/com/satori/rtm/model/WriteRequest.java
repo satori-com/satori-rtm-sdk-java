@@ -1,5 +1,6 @@
 package com.satori.rtm.model;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.satori.rtm.RequestReturnMode;
 
@@ -45,7 +46,7 @@ public class WriteRequest<T> {
     this.channel = channel;
     this.message = message;
     this.position = position;
-    this.read = returnMode.toString();
+    this.read =  returnMode == null ? null : returnMode.toString();
   }
 
   public WriteRequest(String channel, T message, String position, final long ttl, final T ttl_message) {
@@ -64,7 +65,7 @@ public class WriteRequest<T> {
     this.position = position;
     this.ttl = ttl;
     this.ttl_message = ttl_message;
-    this.read = returnMode.toString();
+    this.read =  returnMode == null ? null : returnMode.toString();
   }
 
   public String getChannel() {
