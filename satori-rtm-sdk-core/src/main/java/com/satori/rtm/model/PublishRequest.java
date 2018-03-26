@@ -28,7 +28,7 @@ public class PublishRequest<T> {
 
   private Long ttl;
 
-  private String _return_;
+  private String read;
 
   public PublishRequest() { }
 
@@ -55,7 +55,7 @@ public class PublishRequest<T> {
   public PublishRequest(String channel, T message, RequestReturnMode returnMode) {
     this.channel = channel;
     this.message = message;
-    this._return_ = returnMode.toString();
+    this.read = returnMode.toString();
   }
 
   /**
@@ -99,7 +99,7 @@ public class PublishRequest<T> {
     this.message = message;
     this.ttl = ttl;
     this.ttl_message = ttl_message;
-    this._return_ = returnMode.toString();
+    this.read = returnMode.toString();
   }
 
   public String getChannel() {

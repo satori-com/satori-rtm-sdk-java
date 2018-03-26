@@ -60,6 +60,7 @@ public class KVStorageTest extends AbstractRealTest {
     final Pdu<PublishReply> replyPdu = awaitFuture(client.publish(publishRequest, Ack.YES));
     final PublishReply publishReply = replyPdu.getBody();
     if (RequestReturnMode.PREVIOUS_VALUE_ON_OK.equals(requestReturnMode) || RequestReturnMode.PREVIOUS_VALUE.equals(requestReturnMode)) {
+      assertNotNull(publishReply.getPrevious());
       assertNotNull(publishReply.getPrevious().getMessage());
       assertTrue(publishReply.getPrevious().getMessage().toString().equals(message));
     } else {
@@ -81,6 +82,7 @@ public class KVStorageTest extends AbstractRealTest {
     replyPdu = awaitFuture(client.write(new WriteRequest<String>(channel, message, newPosition, requestReturnMode), Ack.YES));
     final WriteReply writeReply = replyPdu.getBody();
     if (RequestReturnMode.PREVIOUS_VALUE_ON_OK.equals(requestReturnMode) || RequestReturnMode.PREVIOUS_VALUE.equals(requestReturnMode)) {
+      assertNotNull(writeReply.getPrevious());
       assertNotNull(writeReply.getPrevious().getMessage());
       assertTrue(writeReply.getPrevious().getMessage().toString().equals(message));
     } else {
@@ -108,6 +110,7 @@ public class KVStorageTest extends AbstractRealTest {
     }
     final WriteReply writeReply = replyPdu.getBody();
     if (RequestReturnMode.PREVIOUS_VALUE_ON_ERROR.equals(requestReturnMode) || RequestReturnMode.PREVIOUS_VALUE.equals(requestReturnMode)) {
+      assertNotNull(writeReply.getPrevious());
       assertNotNull(writeReply.getPrevious().getMessage());
       assertTrue(writeReply.getPrevious().getMessage().toString().equals(message));
     } else {
@@ -188,6 +191,7 @@ public class KVStorageTest extends AbstractRealTest {
     final Pdu<DeleteReply> deleteReplyPdu = awaitFuture(client.delete(new DeleteRequest(channel, requestReturnMode), Ack.YES));
     final DeleteReply deleteReply = deleteReplyPdu.getBody();
     if (RequestReturnMode.PREVIOUS_VALUE_ON_OK.equals(requestReturnMode) || RequestReturnMode.PREVIOUS_VALUE.equals(requestReturnMode)) {
+      assertNotNull(deleteReply.getPrevious());
       assertNotNull(deleteReply.getPrevious().getMessage());
       assertTrue(deleteReply.getPrevious().getMessage().toString().equals(message2));
     } else {

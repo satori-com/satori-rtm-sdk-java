@@ -27,7 +27,7 @@ public class WriteRequest<T> {
   //TODO: Use separate generic type for the TTL message, in case message types are different.
   private T ttl_message;
 
-  private String _return_;
+  private String read;
 
   public WriteRequest() { }
 
@@ -45,7 +45,7 @@ public class WriteRequest<T> {
     this.channel = channel;
     this.message = message;
     this.position = position;
-    this._return_ = returnMode.toString();
+    this.read = returnMode.toString();
   }
 
   public WriteRequest(String channel, T message, String position, final long ttl, final T ttl_message) {
@@ -64,7 +64,7 @@ public class WriteRequest<T> {
     this.position = position;
     this.ttl = ttl;
     this.ttl_message = ttl_message;
-    this._return_ = returnMode.toString();
+    this.read = returnMode.toString();
   }
 
   public String getChannel() {
