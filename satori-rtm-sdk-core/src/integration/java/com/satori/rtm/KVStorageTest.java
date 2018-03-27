@@ -31,12 +31,12 @@ import org.junit.runners.Parameterized.Parameters;
 public class KVStorageTest extends AbstractRealTest {
   @Parameters
   public static Iterable<? extends Object> requestReturnModes(){
-    return Arrays.asList(RequestReturnMode.values());
+    return Arrays.asList(ReqReadMode.values());
   }
 
-  private RequestReturnMode requestReturnMode;
-  public KVStorageTest(RequestReturnMode returnMode){
-    requestReturnMode = returnMode;
+  private ReqReadMode reqReadMode;
+  public KVStorageTest(ReqReadMode returnMode){
+    reqReadMode = returnMode;
   }
 
   @Test
@@ -55,11 +55,13 @@ public class KVStorageTest extends AbstractRealTest {
     final String message = UUID.randomUUID().toString();
     final RtmClient client = clientBuilder().build();
     client.start();
-    final PublishRequest<String> publishRequest = new PublishRequest<String>(channel, message, requestReturnMode);
+    final PublishRequest<String> publishRequest = new PublishRequest<String>(channel, message,
+        reqReadMode);
     awaitFuture(client.publish(publishRequest, Ack.YES));
     final Pdu<PublishReply> replyPdu = awaitFuture(client.publish(publishRequest, Ack.YES));
     final PublishReply publishReply = replyPdu.getBody();
-    if (RequestReturnMode.PREVIOUS_VALUE_ON_OK.equals(requestReturnMode) || RequestReturnMode.PREVIOUS_VALUE.equals(requestReturnMode)) {
+    if (ReqReadMode.PREVIOUS_VALUE_ON_OK.equals(reqReadMode) || ReqReadMode.PREVIOUS_VALUE.equals(
+        reqReadMode)) {
       assertNotNull(publishReply.getPrevious());
       assertNotNull(publishReply.getPrevious().getMessage());
       assertTrue(publishReply.getPrevious().getMessage().toString().equals(message));
@@ -77,11 +79,14 @@ public class KVStorageTest extends AbstractRealTest {
     final String message = UUID.randomUUID().toString();
     final RtmClient client = clientBuilder().build();
     client.start();
-    Pdu<WriteReply> replyPdu = awaitFuture(client.write(new WriteRequest<String>(channel, message, position, requestReturnMode), Ack.YES));
+    Pdu<WriteReply> replyPdu = awaitFuture(client.write(new WriteRequest<String>(channel, message, position,
+        reqReadMode), Ack.YES));
     final String newPosition = replyPdu.getBody().getPosition();
-    replyPdu = awaitFuture(client.write(new WriteRequest<String>(channel, message, newPosition, requestReturnMode), Ack.YES));
+    replyPdu = awaitFuture(client.write(new WriteRequest<String>(channel, message, newPosition,
+        reqReadMode), Ack.YES));
     final WriteReply writeReply = replyPdu.getBody();
-    if (RequestReturnMode.PREVIOUS_VALUE_ON_OK.equals(requestReturnMode) || RequestReturnMode.PREVIOUS_VALUE.equals(requestReturnMode)) {
+    if (ReqReadMode.PREVIOUS_VALUE_ON_OK.equals(reqReadMode) || ReqReadMode.PREVIOUS_VALUE.equals(
+        reqReadMode)) {
       assertNotNull(writeReply.getPrevious());
       assertNotNull(writeReply.getPrevious().getMessage());
       assertTrue(writeReply.getPrevious().getMessage().toString().equals(message));
@@ -99,17 +104,19 @@ public class KVStorageTest extends AbstractRealTest {
     final String message = UUID.randomUUID().toString();
     final RtmClient client = clientBuilder().build();
     client.start();
-    Pdu<WriteReply> replyPdu = awaitFuture(client.write(new WriteRequest<String>(channel, message, position, requestReturnMode), Ack.YES));
+    Pdu<WriteReply> replyPdu = awaitFuture(client.write(new WriteRequest<String>(channel, message, position,
+        reqReadMode), Ack.YES));
     final String newPosition = replyPdu.getBody().getPosition().replace(":0", ":1");
     try {
       replyPdu = awaitFuture(client
-          .write(new WriteRequest<String>(channel, message, newPosition, requestReturnMode),
+          .write(new WriteRequest<String>(channel, message, newPosition, reqReadMode),
               Ack.YES));
     } catch (ExecutionException ex) {
       assertTrue(ex.getMessage().contains(PduException.class.getSimpleName()));
     }
     final WriteReply writeReply = replyPdu.getBody();
-    if (RequestReturnMode.PREVIOUS_VALUE_ON_ERROR.equals(requestReturnMode) || RequestReturnMode.PREVIOUS_VALUE.equals(requestReturnMode)) {
+    if (ReqReadMode.PREVIOUS_VALUE_ON_ERROR.equals(reqReadMode) || ReqReadMode.PREVIOUS_VALUE.equals(
+        reqReadMode)) {
       assertNotNull(writeReply.getPrevious());
       assertNotNull(writeReply.getPrevious().getMessage());
       assertTrue(writeReply.getPrevious().getMessage().toString().equals(message));
@@ -152,11 +159,12 @@ public class KVStorageTest extends AbstractRealTest {
     ListenableFuture<Pdu<WriteReply>> future =
         client.write(new WriteRequest<String>(channel, "value2", "bad_position"), Ack.YES);
     try {
-      future.get();
-      assertThat(false, is(true));
-    } catch (ExecutionException e) {
-      assertThat(e.getCause(), instanceOf(PduException.class));
-      assertThat(((PduException) e.getCause()).getReply().getError(), equalTo("invalid_format"));
+      Pdu pdu = future.get();
+      assertTrue(pdu.isErrorOutcome() && pdu.isWriteError());
+      assertTrue(pdu.toString().contains("invalid_format"));
+    } catch (ExecutionException ex) {
+      assertThat(ex.getCause(), instanceOf(PduException.class));
+      assertThat(((PduException) ex.getCause()).getReply().getError(), equalTo("invalid_format"));
     }
   }
 
@@ -188,9 +196,11 @@ public class KVStorageTest extends AbstractRealTest {
     client.start();
     awaitFuture(client.write(new WriteRequest<String>(channel, message1, position), Ack.YES));
     awaitFuture(client.write(new WriteRequest<String>(channel, message2, position), Ack.YES));
-    final Pdu<DeleteReply> deleteReplyPdu = awaitFuture(client.delete(new DeleteRequest(channel, requestReturnMode), Ack.YES));
+    final Pdu<DeleteReply> deleteReplyPdu = awaitFuture(client.delete(new DeleteRequest(channel,
+        reqReadMode), Ack.YES));
     final DeleteReply deleteReply = deleteReplyPdu.getBody();
-    if (RequestReturnMode.PREVIOUS_VALUE_ON_OK.equals(requestReturnMode) || RequestReturnMode.PREVIOUS_VALUE.equals(requestReturnMode)) {
+    if (ReqReadMode.PREVIOUS_VALUE_ON_OK.equals(reqReadMode) || ReqReadMode.PREVIOUS_VALUE.equals(
+        reqReadMode)) {
       assertNotNull(deleteReply.getPrevious());
       assertNotNull(deleteReply.getPrevious().getMessage());
       assertTrue(deleteReply.getPrevious().getMessage().toString().equals(message2));

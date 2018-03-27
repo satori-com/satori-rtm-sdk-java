@@ -3,7 +3,7 @@ apply plugin: 'maven'
 
 description = "Satori SDK for Java with GSON serializer."
 
-sourceCompatibility = 1.6
+sourceCompatibility = 1.7
 
 repositories {
     mavenCentral()

@@ -1,6 +1,6 @@
 package com.satori.rtm.model;
 
-import com.satori.rtm.RequestReturnMode;
+import com.satori.rtm.ReqReadMode;
 
 /**
  * Represents the body of a Protocol Data Unit (<strong>PDU</strong>) for a delete request.
@@ -27,11 +27,11 @@ public class DeleteRequest {
     this(channel, null, null);
   }
 
-  public DeleteRequest(String channel, RequestReturnMode returnMode) {
+  public DeleteRequest(String channel, ReqReadMode returnMode) {
     this(channel, null, returnMode);
   }
 
-  public DeleteRequest(String channel, Boolean purge, RequestReturnMode returnMode) {
+  public DeleteRequest(String channel, Boolean purge, ReqReadMode returnMode) {
     this.channel = channel;
     this.purge = purge;
     this.read =  returnMode == null ? null : returnMode.toString();
@@ -45,7 +45,7 @@ public class DeleteRequest {
     return purge;
   }
 
-  public RequestReturnMode getRequestReturnMode() {
-    return RequestReturnMode.valueOf(read);
+  public ReqReadMode getRequestReturnMode() {
+    return ReqReadMode.valueOf(read);
   }
 }

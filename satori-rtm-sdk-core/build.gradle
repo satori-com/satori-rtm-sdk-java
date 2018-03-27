@@ -3,7 +3,7 @@ apply plugin: 'maven'
 
 description = "Satori Core SDK for Java."
 
-sourceCompatibility = 1.6
+sourceCompatibility = 1.7
 
 repositories {
     mavenCentral()

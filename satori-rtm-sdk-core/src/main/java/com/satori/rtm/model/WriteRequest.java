@@ -1,8 +1,7 @@
 package com.satori.rtm.model;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import com.satori.rtm.RequestReturnMode;
+import com.satori.rtm.ReqReadMode;
 
 /**
  * Represents the body of a Protocol Data Unit (<strong>PDU</strong>) for a write request.
@@ -42,7 +41,7 @@ public class WriteRequest<T> {
     this.position = position;
   }
 
-  public WriteRequest(String channel, T message, String position, RequestReturnMode returnMode) {
+  public WriteRequest(String channel, T message, String position, ReqReadMode returnMode) {
     this.channel = channel;
     this.message = message;
     this.position = position;
@@ -58,7 +57,7 @@ public class WriteRequest<T> {
     this.ttl_message = ttl_message;
   }
 
-  public WriteRequest(String channel, T message, String position, final long ttl, final T ttl_message, final RequestReturnMode returnMode) {
+  public WriteRequest(String channel, T message, String position, final long ttl, final T ttl_message, final ReqReadMode returnMode) {
     Preconditions.checkArgument(ttl > 0, String.format("ttl must be non negative: %s", ttl));
     this.channel = channel;
     this.message = message;
@@ -92,7 +91,7 @@ public class WriteRequest<T> {
     return new WriteRequest<T>(channel, message, position, newTtl, newTtlMessage);
   }
 
-  public WriteRequest<T> withRequestReturn(final long newTtl, final RequestReturnMode returnMode) {
+  public WriteRequest<T> withRequestReturn(final long newTtl, final ReqReadMode returnMode) {
     return new WriteRequest<T>(channel, message, position, returnMode);
   }
 

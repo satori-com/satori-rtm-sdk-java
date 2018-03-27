@@ -1,7 +1,7 @@
 package com.satori.rtm.model;
 
 import com.google.common.base.Preconditions;
-import com.satori.rtm.RequestReturnMode;
+import com.satori.rtm.ReqReadMode;
 
 /**
  * Represents the body of a Protocol Data Unit (<strong>PDU</strong>) for a publish request.
@@ -37,7 +37,6 @@ public class PublishRequest<T> {
    *
    * @param channel     The destination channel
    * @param message     The message to publish
-   * @param T           Java type of the messages, used to create an instance from the generic class
    */
   public PublishRequest(String channel, T message) {
     this.channel = channel;
@@ -49,10 +48,9 @@ public class PublishRequest<T> {
    *
    * @param channel     The destination channel
    * @param message     The message to publish
-   * @param T           Java type of the messages, used to create an instance from the generic class
    * @param returnMode  Sets the return message mode for the request.
    */
-  public PublishRequest(String channel, T message, RequestReturnMode returnMode) {
+  public PublishRequest(String channel, T message, ReqReadMode returnMode) {
     this.channel = channel;
     this.message = message;
     this.read =  returnMode == null ? null : returnMode.toString();
@@ -69,7 +67,6 @@ public class PublishRequest<T> {
    * @param message       The message to publish
    * @param ttl           The duration (in seconds) for RTM to wait before publishing the failure message
    * @param ttl_message   The message to publish if the client fails to publish again in the alloted time
-   * @param T             Java type of the messages, used to create an instance from the generic class
    */
   public PublishRequest(String channel, T message, final long ttl, final T ttl_message) {
     Preconditions.checkArgument(ttl > 0, String.format("ttl must be non negative: %s", ttl));
@@ -90,10 +87,9 @@ public class PublishRequest<T> {
    * @param message       The message to publish
    * @param ttl           The duration (in seconds) for RTM to wait before publishing the failure message
    * @param ttl_message   The message to publish if the client fails to publish again in the alloted time
-   * @param T             Java type of the messages, used to create an instance from the generic class
    * @param returnMode  Sets the return message mode for the request.
    */
-  public PublishRequest(String channel, T message, final long ttl, final T ttl_message, final RequestReturnMode returnMode) {
+  public PublishRequest(String channel, T message, final long ttl, final T ttl_message, final ReqReadMode returnMode) {
     Preconditions.checkArgument(ttl > 0, String.format("ttl must be non negative: %s", ttl));
     this.channel = channel;
     this.message = message;
