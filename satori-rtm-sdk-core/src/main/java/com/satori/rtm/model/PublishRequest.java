@@ -34,7 +34,6 @@ public class PublishRequest<T> {
    *
    * @param channel     The destination channel
    * @param message     The message to publish
-   * @param T           Java type of the messages, used to create an instance from the generic class
    */
   public PublishRequest(String channel, T message) {
     this.channel = channel;
@@ -42,7 +41,7 @@ public class PublishRequest<T> {
   }
 
   /**
-   * Create a PublishRequest that specifies a message and time-to-live (<strong>ttl<strong>) options
+   * Create a PublishRequest that specifies a message and time-to-live (<strong>ttl</strong>) options
    * for a destination channel. The {@code ttl} parameter is a duration (in seconds) that RTM waits
    * for the client to publish another message to this channel. If the client fails to publish to
    * this channel before the waiting time expires, RTM publishes the message in the
@@ -52,7 +51,6 @@ public class PublishRequest<T> {
    * @param message       The message to publish
    * @param ttl           The duration (in seconds) for RTM to wait before publishing the failure message
    * @param ttl_message   The message to publish if the client fails to publish again in the alloted time
-   * @param T             Java type of the messages, used to create an instance from the generic class
    */
   public PublishRequest(String channel, T message, final long ttl, final T ttl_message) {
     Preconditions.checkArgument(ttl > 0, String.format("ttl must be non negative: %s", ttl));
