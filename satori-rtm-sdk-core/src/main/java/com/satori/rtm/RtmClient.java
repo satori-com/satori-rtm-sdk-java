@@ -197,9 +197,9 @@ public interface RtmClient {
    * For example:
    * <pre>
    *  String myMessage = "{\"message\": \"Hello\"}";
-   *  ListenableFuture<Pdu<PublishReply>> publish("my_channel", myMessage, Ack.YES);
-   *  Futures.addCallback(reply, new FutureCallback<Pdu<PublishReply>>() {
-   *      public void onSuccess(Pdu<PublishReply> publishReplyPdu) {
+   *  ListenableFuture&lt;Pdu&lt;PublishReply&gt;&gt; publish("my_channel", myMessage, Ack.YES);
+   *  Futures.addCallback(reply, new FutureCallback&lt;Pdu&lt;PublishReply&gt;&gt;() {
+   *      public void onSuccess(Pdu&lt;PublishReply&gt; publishReplyPdu) {
    *         System.out.println("Animal is published: " + animal);
    *      }
    *      public void onFailure(Throwable t) {
@@ -225,11 +225,11 @@ public interface RtmClient {
    * For example:
    * <pre>
    *  String myMessage = "{\"message\": \"Hello\"}";
-   *  PublishRequest<String> pRequest =
-   *      new PublishRequest<String>("my_channel", myMessage, 15, "Dead");
-   *  ListenableFuture<Pdu<PublishReply>> publish(pRequest, Ack.YES);
-   *  Futures.addCallback(reply, new FutureCallback<Pdu<PublishReply>>() {
-   *      public void onSuccess(Pdu<PublishReply> publishReplyPdu) {
+   *  PublishRequest&lt;String&gt; pRequest =
+   *      new PublishRequest&lt;String&gt;("my_channel", myMessage, 15, "Dead");
+   *  ListenableFuture&lt;Pdu&lt;PublishReply&gt;&gt; publish(pRequest, Ack.YES);
+   *  Futures.addCallback(reply, new FutureCallback&lt;Pdu&lt;PublishReply&gt;&gt;() {
+   *      public void onSuccess(Pdu&lt;PublishReply&gt; publishReplyPdu) {
    *         System.out.println("Animal is published: " + animal);
    *      }
    *      public void onFailure(Throwable t) {
