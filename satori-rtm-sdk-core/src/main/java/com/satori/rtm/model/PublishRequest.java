@@ -57,7 +57,7 @@ public class PublishRequest<T> {
   }
 
   /**
-   * Create a PublishRequest that specifies a message and time-to-live (<strong>ttl<strong>) options
+   * Create a PublishRequest that specifies a message and time-to-live (<strong>ttl</strong>) options
    * for a destination channel. The {@code ttl} parameter is a duration (in seconds) that RTM waits
    * for the client to publish another message to this channel. If the client fails to publish to
    * this channel before the waiting time expires, RTM publishes the message in the
@@ -77,7 +77,7 @@ public class PublishRequest<T> {
   }
 
   /**
-   * Create a PublishRequest that specifies a message and time-to-live (<strong>ttl<strong>) options
+   * Create a PublishRequest that specifies a message and time-to-live (<strong>ttl</strong>) options
    * for a destination channel. The {@code ttl} parameter is a duration (in seconds) that RTM waits
    * for the client to publish another message to this channel. If the client fails to publish to
    * this channel before the waiting time expires, RTM publishes the message in the
