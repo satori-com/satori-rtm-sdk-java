@@ -175,6 +175,11 @@ class RtmClientImpl implements RtmClient {
     return mRtmService.delete(new DeleteRequest(key), ack);
   }
 
+  @Override
+  public ListenableFuture<Pdu<DeleteReply>> delete(DeleteRequest deleteRequest, Ack ack) {
+    return mRtmService.delete(deleteRequest, ack);
+  }
+
   public ExecutorService getDispatcher() {
     return mDispatcher;
   }

@@ -219,12 +219,12 @@ public class Connection {
         return;
       }
 
-      boolean isChunkResponse = pdu.getAction().endsWith("/data");
-      if (!isChunkResponse) {
+      if (!pdu.isChunkResponse()) {
         mResponseWaiters.remove(pduId);
       }
       Callback<PduRaw> callback = waiter.getCallback();
-      if (pdu.isOkOutcome() || isChunkResponse) {
+      //TODO: Refactor this not to throw on well formed responses.
+      if (pdu.isOkOutcome() || pdu.isChunkResponse() || pdu.isWriteError()) {
         callback.onResponse(pdu);
       } else {
         callback.onFailure(new PduException("Received PDU has negative outcome", pdu));
