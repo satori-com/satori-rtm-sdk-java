@@ -1,6 +1,7 @@
 package com.satori.rtm.model;
 
 import com.google.common.base.Preconditions;
+import com.satori.rtm.ReqReadMode;
 
 /**
  * Represents the body of a Protocol Data Unit (<strong>PDU</strong>) for a publish request.
@@ -26,6 +27,8 @@ public class PublishRequest<T> {
   private T ttl_message;
 
   private Long ttl;
+
+  private String read;
 
   public PublishRequest() { }
 
@@ -58,6 +61,28 @@ public class PublishRequest<T> {
     this.message = message;
     this.ttl = ttl;
     this.ttl_message = ttl_message;
+  }
+
+  /**
+   * Create a PublishRequest that specifies a message and time-to-live (<strong>ttl</strong>) options
+   * for a destination channel. The {@code ttl} parameter is a duration (in seconds) that RTM waits
+   * for the client to publish another message to this channel. If the client fails to publish to
+   * this channel before the waiting time expires, RTM publishes the message in the
+   * {@code ttl_message} parameter to the same channel.
+   *
+   * @param channel       The destination channel
+   * @param message       The message to publish
+   * @param ttl           The duration (in seconds) for RTM to wait before publishing the failure message
+   * @param ttl_message   The message to publish if the client fails to publish again in the alloted time
+   * @param returnMode  Sets the return message mode for the request.
+   */
+  public PublishRequest(String channel, T message, final long ttl, final T ttl_message, final ReqReadMode returnMode) {
+    Preconditions.checkArgument(ttl > 0, String.format("ttl must be non negative: %s", ttl));
+    this.channel = channel;
+    this.message = message;
+    this.ttl = ttl;
+    this.ttl_message = ttl_message;
+    this.read =  returnMode == null ? null : returnMode.toString();
   }
 
   public String getChannel() {

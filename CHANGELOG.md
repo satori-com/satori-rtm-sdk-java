@@ -1,3 +1,8 @@
+v1.2 (2018-04-09)
+--------------------
+* Add support for return messages for RTM requests.
+* Drop Java 1.6 Support (Supports 1.7+ only)
+
 v1.1.1 (2017-10-11)
 -------------------
 * Add method to PduException to get common RTM reply in case of error
